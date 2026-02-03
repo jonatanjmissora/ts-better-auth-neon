@@ -1,310 +1,590 @@
-Welcome to your new TanStack app! 
-
-# Getting Started
-
-To run this application:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-# Building For Production
-
-To build this application for production:
-
-```bash
-pnpm build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-pnpm test
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
-
-```bash
-pnpm lint
-pnpm format
-pnpm check
-```
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-pnpm add @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
+1 - 
+  pnpm create @tanstack/start@latest  (nitro y shadcn)
+
+2 - limpiamos codigo que no sirve
+
+3 - 
+  pnpm add better-auth drizzle-orm @neondatabase/serverless dotenv zod @tanstack/react-form lucide-react
+  pnpm add -D drizzle-kit tsx
+
+4 - .env con 
+  BETTER_AUTH_SECRET
+  DATABASE_URL
+de https://www.better-auth.com/docs/installation
+
+5 - lib/auth.ts
+  
+  import { betterAuth } from "better-auth";
+  import { drizzleAdapter } from "better-auth/adapters/drizzle";
+  import { db } from "../db/drizzle";
+  import { tanstackStartCookies } from "better-auth/tanstack-start";
+
+  export const auth = betterAuth({
+      database: drizzleAdapter(db, {
+          provider: "pg", 
+      }),
+      socialProviders: {
+          google: { 
+              clientId: process.env.GOOGLE_CLIENT_ID as string, 
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+          }, 
+      },
+      emailAndPassword: { 
+      enabled: true, 
+    },
+    plugins: [tanstackStartCookies()]
   });
 
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
+6 - traemos la DATABASE_URL de neon y la colocamos en .env
+
+7 - db/drizzle.ts
+
+  import { drizzle } from "drizzle-orm/neon-http"
+  import * as schema from "./schema"
+
+  export const db = drizzle(process.env.DATABASE_URL as string, {
+    schema,
+  })
+
+8 - db/schema.ts  (vacio por ahora)
+
+9 - drizzle.config.ts
+
+  import 'dotenv/config';
+  import { defineConfig } from 'drizzle-kit';
+
+  export default defineConfig({
+    out: './drizzle',
+    schema: './db/schema.ts',
+    dialect: 'postgresql',
+    dbCredentials: {
+      url: process.env.DATABASE_URL!,
+    },
+  });
+
+10 - 
+  pnpm dlx @better-auth/cli@latest generate
+
+11 - pasar el archivo que se genero, auth-schema.ts, a db/schema.ts
+
+12 - 
+  pnpm dlx drizzle-kit push
+  o
+  npx drizzle-kit push
+
+=============================================================
+hasta este punto, tienen que estar creadas las conexiones de drizzle y neon. Tienen que estar
+creadas las tablas de better-auth en neon.
+=============================================================
+
+
+13 - routes/api/auth/$.ts
+
+  import { createFileRoute } from "@tanstack/react-router";
+  import { auth } from "lib/auth";
+
+  export const Route = createFileRoute("/api/auth/$")({
+    server: {
+      handlers: {
+        GET: async ({ request }: { request: Request }) => {
+          return await auth.handler(request);
+        },
+        POST: async ({ request }: { request: Request }) => {
+          return await auth.handler(request);
+        },
+      },
+    },
+  });
+
+14 - db/auth-client.ts
+
+  import { createAuthClient } from "better-auth/react"
+  export const authClient = createAuthClient({
+      /** The base URL of the server (optional if you're using the same domain) */
+      baseURL: "http://localhost:3000"
+  })
+
+15 - lib/middleware.ts
+
+  import { redirect } from "@tanstack/react-router";
+  import { createMiddleware } from "@tanstack/react-start";
+  import { getRequestHeaders } from "@tanstack/react-start/server";
+  import { auth } from "./auth";
+
+  export const authMiddleware = createMiddleware().server(
+      async ({ next }) => {
+          const headers = getRequestHeaders();
+          const session = await auth.api.getSession({ headers })
+
+          if (!session) {
+              throw redirect({ to: "/login" })
+          }
+
+          return await next()
+      }
   );
-}
 
-export default App;
-```
+=============================================================
+empezamos con el UI, y los forms de shadcn
+=============================================================
 
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
+16 - 
+  pnpm dlx shadcn@latest add login-03 field
 
-## State Management
+16 - agregamos el Toaster al __root.tsx  
 
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
+16 - routes/dashboard/route.tsx
 
-First you need to add TanStack Store as a dependency:
+  import { createFileRoute, Outlet } from "@tanstack/react-router";
+  import { authMiddleware } from "lib/middleware";
+  import Header from "../../components/Header";
 
-```bash
-pnpm add @tanstack/store
-```
+  export const Route = createFileRoute("/dashboard")({
+    component: RouteComponent,
+    server: {
+      middleware: [authMiddleware],
+    },
+  });
 
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
+  function RouteComponent() {
+    return <section className='p-20'><span className='font-bold text-4xl'>DASHBOARD</span></section>;
+  }
 
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
+17 - routes/login/route.tsx
 
-const countStore = new Store(0);
+  import { createFileRoute } from "@tanstack/react-router";
+  import { LoginForm } from "@/components/login-form";
 
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
+  export const Route = createFileRoute("/login")({
+    component: RouteComponent,
+  });
 
-export default App;
-```
+  function RouteComponent() {
+    return (
+      <section className="w-screen pt-30 flex flex-col justify-center items-center">
+        <LoginForm />
+      </section>
+    );
+  }
 
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
+18 - routes/register/route.tsx
 
-Let's check this out by doubling the count using derived state.
+  import { createFileRoute } from "@tanstack/react-router"
+  import { RegisterForm } from "@/components/register-form"
 
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
+  export const Route = createFileRoute("/register")({
+    component: RouteComponent,
+  })
 
-const countStore = new Store(0);
+  function RouteComponent() {
+    return (
+      <section className="w-screen pt-30 flex flex-col justify-center items-center">
+        <RegisterForm />
+      </section>
+    )
+  }
 
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
+19 - components/login-form.tsx
 
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
+  import { useForm } from "@tanstack/react-form"
+  import { toast } from "sonner"
+  import * as z from "zod"
+  import { Button } from "@/components/ui/button"
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card"
+  import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+    FieldSeparator,
+  } from "@/components/ui/field"
+  import { Input } from "@/components/ui/input"
+  import { cn } from "@/lib/utils"
+  import { authClient } from "lib/auth-client"
+  import { Link } from "@tanstack/react-router"
 
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
+  const formSchema = z.object({
+    email: z.email("Email inválido"),
+    password: z.string().min(8, "Contraseña mínima de 8 caracteres."),
+  })
 
-export default App;
-```
+  export function LoginForm({
+    className,
+    ...props
+  }: React.ComponentProps<"div">) {
+    const form = useForm({
+      defaultValues: {
+        email: "",
+        password: "",
+      },
+      validators: {
+        onSubmit: formSchema,
+      },
+      onSubmit: async ({ value }) => {
+        await authClient.signIn.email(
+          {
+            email: value.email,
+            password: value.password,
+            callbackURL: "/dashboard",
+          },
+          {
+            onSuccess: () => {
+              toast.success("Login exitoso")
+            },
+            onError: ctx => {
+              toast.error(ctx.error.message)
+            },
+          }
+        )
+      },
+    })
 
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
+    const signIn = async () => {
+    return await authClient.signIn.social({
+      provider: "google",
+    callbackURL: "/dashboard",
+    });
+  };
 
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
+    return (
+      <div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl">Bienvenido de nuevo</CardTitle>
+            <CardDescription>Ingresa con una cuenta de Google</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              id="login-form"
+              onSubmit={e => {
+                e.preventDefault()
+                form.handleSubmit()
+              }}
+            >
+              <FieldGroup>
+                <Field>
+                  <Button variant="outline" type="button" onClick={signIn}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <title>Google</title>
+                      <path
+                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    Google
+                  </Button>
+                </Field>
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+                  O continua con
+                </FieldSeparator>
 
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
+                <form.Field
+                  name="email"
+                  children={field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          placeholder="m@example.com"
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )
+                  }}
+                />
 
-# Demo files
+                <form.Field
+                  name="password"
+                  children={field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          placeholder="********"
+                          type="password"
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )
+                  }}
+                />
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+                <Field>
+                  <Button type="submit">Ingresar</Button>
+                  <FieldDescription className="text-center">
+                    No tiene cuenta ? <Link to="/register">Registrate</Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
-# Learn More
+20 - components/register-form.tsx
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+  import { useForm } from "@tanstack/react-form"
+  import { toast } from "sonner"
+  import * as z from "zod"
+  import { Button } from "@/components/ui/button"
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card"
+  import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+    FieldSeparator,
+  } from "@/components/ui/field"
+  import { Input } from "@/components/ui/input"
+  import { cn } from "@/lib/utils"
+  import { authClient } from "lib/auth-client"
+  import { Link } from "@tanstack/react-router"
+
+  const formSchema = z.object({
+    nombre: z.string().min(3, "Nombre mínimo de 3 caracteres."),
+    email: z.email("Email inválido"),
+    password: z.string().min(8, "Contraseña mínima de 8 caracteres."),
+  })
+
+  export function RegisterForm({
+    className,
+    ...props
+  }: React.ComponentProps<"div">) {
+    const form = useForm({
+      defaultValues: {
+        nombre: "",
+        email: "",
+        password: "",
+      },
+      validators: {
+        onSubmit: formSchema,
+      },
+      onSubmit: async ({ value }) => {
+        await authClient.signUp.email(
+          {
+            email: value.email,
+            password: value.password,
+            name: value.nombre,
+            callbackURL: "/dashboard",
+          },
+          {
+            onSuccess: () => {
+              toast.success("Registro exitoso")
+            },
+            onError: ctx => {
+              toast.error(ctx.error.message)
+            },
+          }
+        )
+      },
+    })
+
+    return (
+      <div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl">Bienvenido a la app</CardTitle>
+            <CardDescription>Ingresa con una cuenta de Google</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              id="register-form"
+              onSubmit={e => {
+                e.preventDefault()
+                form.handleSubmit()
+              }}
+            >
+              <FieldGroup>
+                <Field>
+                  <Button variant="outline" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <title>Google</title>
+                      <path
+                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    Google
+                  </Button>
+                </Field>
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+                  O continua con
+                </FieldSeparator>
+
+                <form.Field
+                  name="nombre"
+                  children={field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          placeholder="ruben blada"
+                          autoComplete="off"
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )
+                  }}
+                />
+
+                <form.Field
+                  name="email"
+                  children={field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          placeholder="m@example.com"
+                          autoComplete="off"
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )
+                  }}
+                />
+
+                <form.Field
+                  name="password"
+                  children={field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          placeholder="********"
+                          autoComplete="off"
+                          type="password"
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )
+                  }}
+                />
+
+                <Field>
+                  <Button type="submit">Registrar</Button>
+                  <FieldDescription className="text-center">
+                    Ya tienes cuenta ? <Link to="/login">Ingresar</Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+21 - components/header.tsx
+
+  import { authClient } from "lib/auth-client";
+  import { Button } from "./ui/button";
+  import { useNavigate } from "@tanstack/react-router";
+
+  export default function Header() {
+
+    const {data: session} = authClient.useSession();
+    const navigate = useNavigate();
+
+    const logout = async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            // Redirect to home page after successful logout
+            navigate({ to: '/login' });
+          }
+        }
+      });
+    };
+
+    return (
+      <header className="p-4 px-20 bg-gray-800 text-white shadow-lg">
+        <nav className="flex items-center justify-between">
+          <span>Logo</span>
+            {
+              session 
+              ? (
+              <div className="flex items-center gap-4">
+                <span>Bienvenido {session.user.name}</span> 
+                <Button onClick={logout}>Log Out</Button>
+              </div>
+              )
+              : <span>Not logged in</span>
+            }
+        </nav>
+      </header>
+    )
+  }
+
+22 - configurar el GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET en el .env
+dentro de https://console.cloud.google.com/apis/dashboard?project=ts-better-auth-neon
+viendo el video https://www.youtube.com/watch?v=xqd51D3O53k&list=LL&index=8
+minuto 35
+
+
+

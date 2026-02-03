@@ -28,7 +28,7 @@ export default function Header() {
             session 
             ? (
             <div className="flex items-center gap-4">
-              <span>Welcome {session.user.name}</span> 
+              <span>Bienvenido {session.user.name}</span> 
               <Button onClick={logout}>Log Out</Button>
             </div>
             )
