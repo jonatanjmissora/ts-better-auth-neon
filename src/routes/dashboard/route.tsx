@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { authMiddleware } from "lib/middleware";
+import Header from "../../components/Header";
 
 export const Route = createFileRoute("/dashboard")({
 	component: RouteComponent,
@@ -9,5 +10,5 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function RouteComponent() {
-	return <div>Hello "/dashboard"!</div>;
+	return <section><Header /><Outlet /></section>;
 }

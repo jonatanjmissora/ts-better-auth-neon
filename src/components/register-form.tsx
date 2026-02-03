@@ -173,7 +173,7 @@ export function RegisterForm({
 							/>
 
 							<Field>
-								<Button type="submit">Ingresar</Button>
+								<Button type="submit">Registrar</Button>
 								<FieldDescription className="text-center">
 									Ya tienes cuenta ? <Link to="/login">Ingresar</Link>
 								</FieldDescription>

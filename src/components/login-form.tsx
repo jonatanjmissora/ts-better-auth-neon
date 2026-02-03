@@ -58,6 +58,13 @@ export function LoginForm({
 		},
 	})
 
+	const signIn = async () => {
+  return await authClient.signIn.social({
+    provider: "google",
+	callbackURL: "/dashboard",
+  });
+};
+
 	return (
 		<div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
 			<Card>
@@ -75,7 +82,7 @@ export function LoginForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button">
+								<Button variant="outline" type="button" onClick={signIn}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 										<title>Google</title>
 										<path
@@ -106,7 +113,6 @@ export function LoginForm({
 												onChange={e => field.handleChange(e.target.value)}
 												aria-invalid={isInvalid}
 												placeholder="m@example.com"
-												autoComplete="off"
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -132,7 +138,6 @@ export function LoginForm({
 												onChange={e => field.handleChange(e.target.value)}
 												aria-invalid={isInvalid}
 												placeholder="********"
-												autoComplete="off"
 												type="password"
 											/>
 											{isInvalid && (
