@@ -1,6 +1,6 @@
 import { authClient } from "lib/auth-client";
 import { Button } from "./ui/button";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 export default function Header() {
 
@@ -18,8 +18,6 @@ export default function Header() {
     });
   };
 
-  console.log(session);
-
   return (
     <header className="p-4 px-20 bg-gray-800 text-white shadow-lg">
       <nav className="flex items-center justify-between">
@@ -32,7 +30,12 @@ export default function Header() {
               <Button onClick={logout}>Log Out</Button>
             </div>
             )
-            : <span>Not logged in</span>
+            : (
+            <div className="flex items-center gap-4">
+              <Link to="/login"><Button>Log In</Button></Link>
+              <Link to="/register"><Button>Register</Button></Link>
+            </div>
+            )
           }
       </nav>
     </header>

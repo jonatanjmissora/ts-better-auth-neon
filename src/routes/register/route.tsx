@@ -7,7 +7,7 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
 	return (
-		<section className="w-screen pt-30 flex flex-col justify-center items-center">
+		<section className="w-screen sm:pt-10 2xl:pt-30 flex flex-col justify-center items-center">
 			<RegisterForm />
 		</section>
 	)
