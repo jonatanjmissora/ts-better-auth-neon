@@ -15,7 +15,7 @@
     DATABASE_URL
 de https://www.better-auth.com/docs/installation
 
-5️⃣ lib/auth.ts
+5️⃣ lib/auth/auth.ts
   
     import { betterAuth } from "better-auth";
     import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -116,7 +116,7 @@ creadas las tablas de better-auth en neon.
     import { redirect } from "@tanstack/react-router";
     import { createMiddleware } from "@tanstack/react-start";
     import { getRequestHeaders } from "@tanstack/react-start/server";
-    import { auth } from "./auth";
+    import { auth } from "./auth/auth";
   
     export const authMiddleware = createMiddleware().server(
         async ({ next }) => {
@@ -214,7 +214,7 @@ empezamos con el UI, y los forms de shadcn
     } from "@/components/ui/field"
     import { Input } from "@/components/ui/input"
     import { cn } from "@/lib/utils"
-    import { authClient } from "lib/auth-client"
+    import { authClient } from "lib/auth/auth-client"
     import { Link } from "@tanstack/react-router"
   
     const formSchema = z.object({
@@ -380,7 +380,7 @@ empezamos con el UI, y los forms de shadcn
     } from "@/components/ui/field"
     import { Input } from "@/components/ui/input"
     import { cn } from "@/lib/utils"
-    import { authClient } from "lib/auth-client"
+    import { authClient } from "lib/auth/auth-client"
     import { Link } from "@tanstack/react-router"
   
     const formSchema = z.object({
@@ -549,7 +549,7 @@ empezamos con el UI, y los forms de shadcn
 
 2️⃣1️⃣ components/header.tsx
 
-    import { authClient } from "lib/auth-client";
+    import { authClient } from "lib/auth/auth-client";
     import { Button } from "./ui/button";
     import { useNavigate } from "@tanstack/react-router";
   

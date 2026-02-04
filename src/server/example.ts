@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequest } from "@tanstack/react-start/server"
-import { protectedServerFn } from "lib/protected-serverFn"
+import { protectedServerFn } from "lib/auth/protected-serverFn"
 
 export const deletePost = createServerFn({ method: "POST" }).handler(
 	async () => {

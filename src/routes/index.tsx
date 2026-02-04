@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import Header from "../components/Header"
-import { protectedRoute } from "lib/protected-route"
+import { protectedRoute } from "lib/auth/protected-route"
 
 export const Route = createFileRoute("/")({
 	component: App,

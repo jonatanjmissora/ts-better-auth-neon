@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { authClient } from "lib/auth-client"
+import { authClient } from "lib/auth/auth-client"
 import { Link, useRouter } from "@tanstack/react-router"
 
 const formSchema = z.object({

@@ -35,7 +35,6 @@ export const Route = createRootRouteWithContext<{
 	}),
 	loader: async () => {
 		const session = await getSession()
-		console.log("ROOT SESSION:", session)
 		return { session }
 	},
 	shellComponent: RootDocument,

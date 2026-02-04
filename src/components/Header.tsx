@@ -1,4 +1,4 @@
-import { authClient } from "lib/auth-client"
+import { authClient } from "lib/auth/auth-client"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { Moon, Sun } from "lucide-react"
 import { useState } from "react"
