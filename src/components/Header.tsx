@@ -1,15 +1,21 @@
 import { authClient } from "lib/auth-client";
-import { Button } from "./ui/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Moon, Sun } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function Header() {
 
   const {data: session} = authClient.useSession();
-  const navigate = useNavigate();
-
-const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
     const toggleTheme = () => {
         if(typeof window !== 'undefined') {
@@ -24,6 +30,36 @@ const [theme, setTheme] = useState<'light' | 'dark'>('light');
         }
     };
 
+  return (
+    <header className="p-4 px-20">
+      <nav className="flex items-center justify-between">
+        <span className="text-xl font-semibold">Logo</span>
+
+          {
+            session 
+            ? (
+            <DropdownMenuDemo name={session.user.name} theme={theme} setTheme={setTheme} />
+            )
+            : (
+            <div className="flex items-center gap-4">
+              <Link to="/login"><Button>Log In</Button></Link>
+              <Link to="/register"><Button>Register</Button></Link>
+              <button className="" onClick={toggleTheme}>
+            {
+                theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />
+            }
+        </button>
+            </div>
+            )
+          }
+      </nav>
+    </header>
+  )
+}
+
+export function DropdownMenuDemo({ name, theme, setTheme }: { name: string; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
+
+  const navigate = useNavigate();
   const logout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -35,34 +71,38 @@ const [theme, setTheme] = useState<'light' | 'dark'>('light');
     });
   };
 
-  return (
-    <header className="p-4 px-20">
-      <nav className="flex items-center justify-between">
-        <span className="text-xl font-semibold">Logo</span>
-        <div className="flex items-center gap-4">
-        <button className="" onClick={toggleTheme}>
-            {
-                theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />
+  const toggleTheme = () => {
+        if(typeof window !== 'undefined') {
+            const html = document.documentElement;
+            if(html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                setTheme('light');
+            } else {
+                html.classList.add('dark');
+                setTheme('dark');
             }
-        </button>
+        }
+    };
 
-          {
-            session 
-            ? (
-            <div className="flex items-center gap-4">
-              <span>Bienvenido {session.user.name}</span> 
-              <Button onClick={logout}>Log Out</Button>
-            </div>
-            )
-            : (
-            <div className="flex items-center gap-4">
-              <Link to="/login"><Button>Log In</Button></Link>
-              <Link to="/register"><Button>Register</Button></Link>
-            </div>
-            )
-          }
-        </div>
-      </nav>
-    </header>
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <span>Bienvenido {name}</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-40 p-4" align="end">
+        <DropdownMenuGroup>
+          
+          <DropdownMenuItem onClick={logout} className="flex justify-end m-4">
+            Log out
+          </DropdownMenuItem>
+        <DropdownMenuSeparator />
+          
+          <DropdownMenuItem onClick={toggleTheme} className="flex justify-end m-4">Tema {
+                theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />
+            }</DropdownMenuItem>
+        </DropdownMenuGroup>
+        
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
