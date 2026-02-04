@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { authMiddleware } from "lib/middleware"
 import Header from "../components/Header"
+import { protectedRoute } from "lib/protected-route"
 
 export const Route = createFileRoute("/")({
 	component: App,
-	// server: {
-	// 	middleware: [authMiddleware],
-	// },
+	loader: async () => {
+		await protectedRoute()
+		return {}
+	},
 })
 
 function App() {

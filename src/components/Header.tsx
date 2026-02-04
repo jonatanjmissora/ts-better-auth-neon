@@ -37,7 +37,7 @@ export default function Header() {
 
 				{session ? (
 					<DropdownMenuDemo
-						name={"session"}
+						name={session.user?.name}
 						theme={theme}
 						setTheme={setTheme}
 					/>
