@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { authClient } from "lib/auth-client"
-import { Link } from "@tanstack/react-router"
+import { Link, useRouter } from "@tanstack/react-router"
 
 const formSchema = z.object({
 	nombre: z.string().min(3, "Nombre mínimo de 3 caracteres."),
@@ -32,6 +32,7 @@ export function RegisterForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
+	const router = useRouter()
 	const form = useForm({
 		defaultValues: {
 			nombre: "",
@@ -47,11 +48,12 @@ export function RegisterForm({
 					email: value.email,
 					password: value.password,
 					name: value.nombre,
-					callbackURL: "/dashboard",
+					callbackURL: "/",
 				},
 				{
 					onSuccess: () => {
 						toast.success("Registro exitoso")
+						router.invalidate()
 					},
 					onError: ctx => {
 						toast.error(ctx.error.message)
@@ -60,6 +62,13 @@ export function RegisterForm({
 			)
 		},
 	})
+
+	const signIn = async () => {
+		return await authClient.signIn.social({
+			provider: "google",
+			callbackURL: "/",
+		})
+	}
 
 	return (
 		<div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
@@ -78,7 +87,7 @@ export function RegisterForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button">
+								<Button variant="outline" type="button" onClick={signIn}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 										<title>Google</title>
 										<path

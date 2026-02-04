@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { authClient } from "lib/auth-client"
 import { Link } from "@tanstack/react-router"
+import { useRouter } from "@tanstack/react-router"
+import { useState } from "react"
 
 const formSchema = z.object({
 	email: z.email("Email inválido"),
@@ -31,6 +33,8 @@ export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
+	const router = useRouter()
+	const [loading, setLoading] = useState(false)
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -40,30 +44,35 @@ export function LoginForm({
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			await authClient.signIn.email(
-				{
-					email: value.email,
-					password: value.password,
-					callbackURL: "/dashboard",
-				},
-				{
-					onSuccess: () => {
-						toast.success("Login exitoso")
-					},
-					onError: ctx => {
-						toast.error(ctx.error.message)
-					},
-				}
-			)
+			const result = await authClient.signIn.email({
+				email: value.email,
+				password: value.password,
+				callbackURL: "/",
+			})
+			if (result.error) {
+				toast.error("Email o contraseña incorrectos")
+				return
+			}
+
+			toast.success("Login exitoso")
+			router.invalidate()
 		},
 	})
 
 	const signIn = async () => {
-  return await authClient.signIn.social({
-    provider: "google",
-	callbackURL: "/dashboard",
-  });
-};
+		setLoading(true)
+
+		try {
+			await authClient.signIn.social({
+				provider: "google",
+				callbackURL: "/",
+			})
+		} catch (err: any) {
+			// error ANTES de redirigir
+			setLoading(false)
+			toast.error("No se pudo iniciar sesión con Google")
+		}
+	}
 
 	return (
 		<div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
@@ -90,7 +99,7 @@ export function LoginForm({
 											fill="currentColor"
 										/>
 									</svg>
-									Google
+									{loading ? "Iniciando..." : "Google"}
 								</Button>
 							</Field>
 							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

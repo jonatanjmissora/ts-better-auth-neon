@@ -1,10 +1,18 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { Toaster } from "sonner";
-import appCss from "../styles.css?url";
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import {
+	createRootRouteWithContext,
+	HeadContent,
+	Scripts,
+} from "@tanstack/react-router"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { Toaster } from "sonner"
+import appCss from "../styles.css?url"
+import { Session } from "better-auth"
+import { getSession } from "@/server/getSession"
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+	session: Session | null
+}>()({
 	head: () => ({
 		meta: [
 			{
@@ -25,9 +33,13 @@ export const Route = createRootRoute({
 			},
 		],
 	}),
-
+	loader: async () => {
+		const session = await getSession()
+		return { session }
+	},
 	shellComponent: RootDocument,
-});
+	notFoundComponent: () => <p>Not Found</p>,
+})
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
@@ -52,5 +64,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Scripts />
 			</body>
 		</html>
-	);
+	)
 }
