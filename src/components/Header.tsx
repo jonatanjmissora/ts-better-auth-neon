@@ -36,11 +36,24 @@ export default function Header() {
 				<span className="text-xl font-semibold">Logo</span>
 
 				{session ? (
-					<DropdownMenuDemo
-						name={session.user?.name}
-						theme={theme}
-						setTheme={setTheme}
-					/>
+					<>
+						<div className="flex items-center gap-4">
+							<Link to="/">
+								<Button>Home</Button>
+							</Link>
+							<Link to="/items">
+								<Button>List Items</Button>
+							</Link>
+							<Link to="/items/create">
+								<Button>Create Item</Button>
+							</Link>
+						</div>
+						<DropdownMenuDemo
+							name={session.user?.name}
+							theme={theme}
+							setTheme={setTheme}
+						/>
+					</>
 				) : (
 					<div className="flex items-center gap-4">
 						<Link to="/login">

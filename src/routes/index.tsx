@@ -14,7 +14,7 @@ function App() {
 	return (
 		<section className="flex flex-col">
 			<Header />
-			<span className="font-bold text-4xl p-20">DASHBOARD</span>
+			<span className="font-bold text-4xl p-20">HOME</span>
 		</section>
 	)
 }

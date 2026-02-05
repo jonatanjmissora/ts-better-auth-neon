@@ -1,0 +1,1 @@
+ALTER TABLE "items" ALTER COLUMN "phone" SET NOT NULL;

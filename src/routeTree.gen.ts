@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteRouteImport } from './routes/register/route'
 import { Route as LoginRouteRouteImport } from './routes/login/route'
+import { Route as ItemsRouteRouteImport } from './routes/items/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ItemsIndexRouteImport } from './routes/items/index'
+import { Route as ItemsCreateRouteImport } from './routes/items/create'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const RegisterRouteRoute = RegisterRouteRouteImport.update({
@@ -24,10 +27,25 @@ const LoginRouteRoute = LoginRouteRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItemsRouteRoute = ItemsRouteRouteImport.update({
+  id: '/items',
+  path: '/items',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsIndexRoute = ItemsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ItemsRouteRoute,
+} as any)
+const ItemsCreateRoute = ItemsCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => ItemsRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -37,33 +55,57 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/items': typeof ItemsRouteRouteWithChildren
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/items/create': typeof ItemsCreateRoute
+  '/items/': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/items/create': typeof ItemsCreateRoute
+  '/items': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/items': typeof ItemsRouteRouteWithChildren
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/items/create': typeof ItemsCreateRoute
+  '/items/': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/items'
+    | '/login'
+    | '/register'
+    | '/items/create'
+    | '/items/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/api/auth/$'
-  id: '__root__' | '/' | '/login' | '/register' | '/api/auth/$'
+  to: '/' | '/login' | '/register' | '/items/create' | '/items' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/items'
+    | '/login'
+    | '/register'
+    | '/items/create'
+    | '/items/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ItemsRouteRoute: typeof ItemsRouteRouteWithChildren
   LoginRouteRoute: typeof LoginRouteRoute
   RegisterRouteRoute: typeof RegisterRouteRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -85,12 +127,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/items': {
+      id: '/items'
+      path: '/items'
+      fullPath: '/items'
+      preLoaderRoute: typeof ItemsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/items/': {
+      id: '/items/'
+      path: '/'
+      fullPath: '/items/'
+      preLoaderRoute: typeof ItemsIndexRouteImport
+      parentRoute: typeof ItemsRouteRoute
+    }
+    '/items/create': {
+      id: '/items/create'
+      path: '/create'
+      fullPath: '/items/create'
+      preLoaderRoute: typeof ItemsCreateRouteImport
+      parentRoute: typeof ItemsRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -102,8 +165,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ItemsRouteRouteChildren {
+  ItemsCreateRoute: typeof ItemsCreateRoute
+  ItemsIndexRoute: typeof ItemsIndexRoute
+}
+
+const ItemsRouteRouteChildren: ItemsRouteRouteChildren = {
+  ItemsCreateRoute: ItemsCreateRoute,
+  ItemsIndexRoute: ItemsIndexRoute,
+}
+
+const ItemsRouteRouteWithChildren = ItemsRouteRoute._addFileChildren(
+  ItemsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ItemsRouteRoute: ItemsRouteRouteWithChildren,
   LoginRouteRoute: LoginRouteRoute,
   RegisterRouteRoute: RegisterRouteRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

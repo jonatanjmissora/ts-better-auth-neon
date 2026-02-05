@@ -8,7 +8,9 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { Toaster } from "sonner"
 import appCss from "../styles.css?url"
 import { Session } from "better-auth"
-import { getSession } from "@/server/getSession"
+import { getSession } from "server/getSession"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { getQueryClient } from "queries/querie-client"
 
 export const Route = createRootRouteWithContext<{
 	session: Session | null
@@ -42,14 +44,18 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const queryClient = getQueryClient()
+
 	return (
 		<html lang="en" className="dark">
 			<head>
 				<HeadContent />
 			</head>
 			<body>
-				{children}
-				<Toaster />
+				<QueryClientProvider client={queryClient}>
+					{children}
+					<Toaster />
+				</QueryClientProvider>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

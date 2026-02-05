@@ -1,0 +1,7 @@
+import { db } from "db/drizzle"
+import { items, NewItemType } from "./schema"
+
+export async function insertItem(newItem: NewItemType) {
+	console.log("NEWITEM", newItem)
+	return await db.insert(items).values(newItem).returning()
+}

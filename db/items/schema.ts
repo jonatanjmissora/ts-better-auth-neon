@@ -5,6 +5,8 @@ import {
 	bigint,
 	index,
 	serial,
+	timestamp,
+	varchar,
 } from "drizzle-orm/pg-core"
 import { user } from "../users/schema"
 
@@ -13,11 +15,13 @@ export const items = pgTable(
 	{
 		id: text("id").primaryKey(),
 
-		date: bigint("date", { mode: "number" }).notNull(),
+		date: timestamp("date", {
+			withTimezone: true, // 👈 CLAVE
+		}).notNull(),
 
 		name: text("name").notNull(),
 
-		phone: bigint("phone", { mode: "number" }),
+		phone: varchar("phone", { length: 20 }).notNull(),
 
 		categoryId: integer("category_id")
 			.notNull()
