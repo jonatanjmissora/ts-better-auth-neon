@@ -1,6 +1,12 @@
-import { pgTable, text, integer, bigint, index } from "drizzle-orm/pg-core"
+import {
+	pgTable,
+	text,
+	integer,
+	bigint,
+	index,
+	serial,
+} from "drizzle-orm/pg-core"
 import { user } from "../users/schema"
-import { z } from "zod"
 
 export const items = pgTable(
 	"items",
@@ -13,7 +19,11 @@ export const items = pgTable(
 
 		phone: bigint("phone", { mode: "number" }),
 
-		categoryId: integer("category_id").notNull(),
+		categoryId: integer("category_id")
+			.notNull()
+			.references(() => categories.id, {
+				onDelete: "restrict", // o "cascade" según tu caso
+			}),
 
 		userId: text("user_id")
 			.notNull()
@@ -25,11 +35,12 @@ export const items = pgTable(
 )
 
 export type Item = typeof items.$inferSelect
-export type NewItem = typeof items.$inferInsert
+export type NewItemType = typeof items.$inferInsert
 
-export const itemSchema = z.object({
-	name: z.string().min(1),
-	date: z.number(),
-	phone: z.number().optional(),
-	categoryId: z.number(),
+export const categories = pgTable("categories", {
+	id: serial("id").primaryKey(),
+	name: text("name").notNull(),
 })
+
+export type CategoryType = typeof categories.$inferSelect
+export type NewCategoryType = typeof categories.$inferInsert
