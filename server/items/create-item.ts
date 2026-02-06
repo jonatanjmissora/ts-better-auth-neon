@@ -1,15 +1,14 @@
 import { createServerFn } from "@tanstack/react-start"
+import { getRequest } from "@tanstack/react-start/server"
 import { insertItem } from "db/items/item-insert"
 import { itemSchema } from "db/types/items-type"
-import { getSession } from "server/getSession"
+import { protectedServerFn } from "lib/auth/protected-serverFn"
 
 export const createItem = createServerFn({ method: "POST" })
 	.inputValidator(itemSchema)
 	.handler(async ({ data }) => {
-		const session = await getSession()
-		if (!session) {
-			throw new Response("Unauthorized", { status: 401 })
-		}
+		const request = getRequest()
+		const session = await protectedServerFn(request)
 
 		const newItem = {
 			...data,

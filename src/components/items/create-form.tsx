@@ -8,7 +8,7 @@ import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
 import { itemSchema } from "db/types/items-type"
-import { toast } from "sonner"
+// import { toast } from "sonner"
 import { useCreateItem } from "queries/items/useCreateItem"
 
 export default function CreateForm({
@@ -25,9 +25,9 @@ export default function CreateForm({
 	const form = useForm({
 		defaultValues: {
 			name: "",
-			phone: "",
+			phone: 0,
 			categoryId: 0,
-			date: new Date(),
+			date: 0,
 		},
 		validators: {
 			onSubmit: itemSchema,
@@ -96,9 +96,9 @@ export default function CreateForm({
 									<Input
 										id={field.name}
 										name={field.name}
-										value={field.state.value ?? "0"}
+										value={field.state.value}
 										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(e.target.value)}
+										onChange={e => field.handleChange(Number(e.target.value))}
 										aria-invalid={isInvalid}
 										placeholder=""
 									/>
@@ -142,10 +142,9 @@ export default function CreateForm({
 									<Input
 										id={field.name}
 										name={field.name}
-										type="datetime-local"
-										value={format(field.state.value, "yyyy-MM-dd'T'HH:mm")}
+										value={field.state.value}
 										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(new Date(e.target.value))}
+										onChange={e => field.handleChange(Number(e.target.value))}
 										aria-invalid={isInvalid}
 										placeholder=""
 									/>
