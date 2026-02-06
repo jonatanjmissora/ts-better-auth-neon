@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
-import { getCategoriesFn } from "server/categories/get-categories"
+import { getCategoriesServer } from "server/categories/get-categories-server"
 
 export const categoriesQueryOptions = queryOptions({
 	queryKey: ["categories"],
-	queryFn: () => getCategoriesFn(),
+	queryFn: () => getCategoriesServer(),
 })

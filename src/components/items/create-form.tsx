@@ -7,10 +7,10 @@ import { FieldError } from "../ui/field"
 import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { itemSchema } from "db/types/items-type"
+import { itemValidator } from "db/items/items-validator"
 import { toast } from "sonner"
-import { useCreateItem } from "queries/items/useCreateItem"
-import { categoriesQueryOptions } from "queries/categories/get-query"
+import { useCreateItem } from "queries/items/use-create-item"
+import { categoriesQueryOptions } from "queries/categories/get-categories-query"
 import { useQuery } from "@tanstack/react-query"
 import {
 	Select,
@@ -44,7 +44,7 @@ export default function CreateForm({
 			date: 0,
 		},
 		validators: {
-			onSubmit: itemSchema,
+			onSubmit: itemValidator,
 		},
 		onSubmit: async ({ value }) => {
 			try {
@@ -146,7 +146,7 @@ export default function CreateForm({
 
 										<SelectContent>
 											<SelectGroup>
-												<SelectLabel>Categorías</SelectLabel>
+												<SelectLabel>Servicios</SelectLabel>
 
 												{isLoading ? (
 													<span>Cargando</span>

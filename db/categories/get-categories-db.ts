@@ -1,7 +1,7 @@
 import { db } from "db/drizzle"
 import { categories } from "./schema"
 
-export const getCategories = async () => {
+export const getCategoriesDB = async () => {
 	return db
 		.select({
 			id: categories.id,
