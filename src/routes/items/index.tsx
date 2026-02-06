@@ -44,7 +44,7 @@ function ItemsList() {
 						<span>Nombre: {item.name}</span>
 						<span>Teléfono: {item.phone}</span>
 						<span>Fecha: {item.date.toString()}</span>
-						<span>Categoría: {item.categoryId.toString()}</span>
+						<span>Categoría: {item.category.name}</span>
 					</CardContent>
 				</Card>
 			))}

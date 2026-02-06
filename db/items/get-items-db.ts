@@ -2,8 +2,22 @@ import { db } from "db/drizzle"
 import { items } from "./schema"
 import { eq } from "drizzle-orm"
 import { delay } from "lib/utils"
+import { categories } from "../categories/schema"
 
 export async function getItemsDB(userId: string) {
 	await delay()
-	return await db.select().from(items).where(eq(items.userId, userId))
+	return await db
+		.select({
+			id: items.id,
+			name: items.name,
+			phone: items.phone,
+			date: items.date,
+			category: {
+				id: categories.id,
+				name: categories.name,
+			},
+		})
+		.from(items)
+		.innerJoin(categories, eq(items.categoryId, categories.id))
+		.where(eq(items.userId, userId))
 }
