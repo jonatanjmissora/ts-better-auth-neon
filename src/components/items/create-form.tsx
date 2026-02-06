@@ -8,8 +8,19 @@ import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
 import { itemSchema } from "db/types/items-type"
-// import { toast } from "sonner"
+import { toast } from "sonner"
 import { useCreateItem } from "queries/items/useCreateItem"
+import { categoriesQueryOptions } from "queries/categories/get-query"
+import { useQuery } from "@tanstack/react-query"
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "../ui/select"
 
 export default function CreateForm({
 	sessionUserId,
@@ -22,6 +33,9 @@ export default function CreateForm({
 		isPending,
 		error,
 	} = useCreateItem(sessionUserId)
+
+	const { data: categories, isLoading } = useQuery(categoriesQueryOptions)
+
 	const form = useForm({
 		defaultValues: {
 			name: "",
@@ -34,19 +48,19 @@ export default function CreateForm({
 		},
 		onSubmit: async ({ value }) => {
 			try {
+				console.log("VALUE", value)
 				const result = await createItemMutation({ data: value })
 
-				console.log("RESULT", result)
+				if (!result) {
+					toast.error("Error al crear el item")
+					return
+				}
+				toast.success("Item creado exitosamente")
+				router.navigate({ to: "/" })
+				router.invalidate()
 			} catch (error) {
 				console.error("Error al crear el item", error)
 			}
-			// if (!value.id) {
-			// 	toast.error("Error al crear el item")
-			// 	return
-			// }
-
-			// toast.success("Item creado exitosamente")
-			router.invalidate()
 		},
 	})
 
@@ -113,18 +127,43 @@ export default function CreateForm({
 						children={field => {
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
+
 							return (
 								<Field data-invalid={isInvalid}>
 									<FieldLabel htmlFor={field.name}>Servicio</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(Number(e.target.value))}
-										aria-invalid={isInvalid}
-										placeholder="0"
-									/>
+
+									<Select
+										value={
+											field.state.value ? String(field.state.value) : undefined
+										}
+										onValueChange={value => {
+											field.handleChange(Number(value))
+										}}
+									>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="Seleccionar categoría" />
+										</SelectTrigger>
+
+										<SelectContent>
+											<SelectGroup>
+												<SelectLabel>Categorías</SelectLabel>
+
+												{isLoading ? (
+													<span>Cargando</span>
+												) : (
+													categories?.map(category => (
+														<SelectItem
+															key={category.id}
+															value={String(category.id)}
+														>
+															{category.name}
+														</SelectItem>
+													))
+												)}
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)

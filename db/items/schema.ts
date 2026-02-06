@@ -1,12 +1,6 @@
-import {
-	pgTable,
-	text,
-	integer,
-	index,
-	serial,
-	bigint,
-} from "drizzle-orm/pg-core"
+import { pgTable, text, integer, index, bigint } from "drizzle-orm/pg-core"
 import { user } from "../users/schema"
+import { categories } from "db/categories/schema"
 
 export const items = pgTable(
 	"items",
@@ -36,11 +30,3 @@ export const items = pgTable(
 
 export type Item = typeof items.$inferSelect
 export type NewItemType = typeof items.$inferInsert
-
-export const categories = pgTable("categories", {
-	id: serial("id").primaryKey(),
-	name: text("name").notNull(),
-})
-
-export type CategoryType = typeof categories.$inferSelect
-export type NewCategoryType = typeof categories.$inferInsert
