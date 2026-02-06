@@ -11,7 +11,7 @@ function RouteComponent() {
 	if (!session) return null
 
 	return (
-		<section className="p-20 flex flex-col items-center">
+		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
 			<CreateForm sessionUserId={session.user.id} />
 		</section>
 	)

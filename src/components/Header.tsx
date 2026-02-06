@@ -109,7 +109,9 @@ export function DropdownMenuDemo({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<span>Bienvenido {name}</span>
+				<Button variant="ghost" className="cursor-pointer">
+					Bienvenido {name}
+				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-40 p-4" align="end">
 				<DropdownMenuGroup>

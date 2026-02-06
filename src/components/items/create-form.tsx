@@ -21,6 +21,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select"
+import { X } from "lucide-react"
 
 export default function CreateForm({
 	sessionUserId,
@@ -65,7 +66,22 @@ export default function CreateForm({
 	})
 
 	return (
-		<div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
+		<div
+			className={cn(
+				"min-w-1/3 flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				className
+			)}
+			{...props}
+		>
+			<div className="absolute top-4 right-4">
+				<Button
+					variant="ghost"
+					className="cursor-pointer"
+					onClick={() => router.navigate({ to: "/items" })}
+				>
+					<X size={20} />
+				</Button>
+			</div>
 			<form
 				id="create-form"
 				onSubmit={e => {
@@ -73,7 +89,7 @@ export default function CreateForm({
 					form.handleSubmit()
 				}}
 			>
-				<FieldGroup>
+				<FieldGroup className="gap-5">
 					<h2 className="text-2xl font-bold">Crear Item</h2>
 
 					<form.Field
@@ -82,7 +98,7 @@ export default function CreateForm({
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
-								<Field data-invalid={isInvalid}>
+								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
 									<Input
 										id={field.name}
@@ -105,7 +121,7 @@ export default function CreateForm({
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
-								<Field data-invalid={isInvalid}>
+								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Telefono</FieldLabel>
 									<Input
 										id={field.name}
@@ -129,7 +145,7 @@ export default function CreateForm({
 								field.state.meta.isTouched && !field.state.meta.isValid
 
 							return (
-								<Field data-invalid={isInvalid}>
+								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Servicio</FieldLabel>
 
 									<Select
@@ -176,7 +192,7 @@ export default function CreateForm({
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
-								<Field data-invalid={isInvalid}>
+								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Fecha</FieldLabel>
 									<Input
 										id={field.name}
