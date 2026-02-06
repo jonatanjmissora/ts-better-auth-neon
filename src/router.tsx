@@ -10,9 +10,10 @@ export const getRouter = () => {
 		context: {
 			session: null,
 		},
-
-		scrollRestoration: true,
+		defaultPendingMs: 0,
+		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
+		scrollRestoration: true,
 	})
 
 	return router

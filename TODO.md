@@ -2,39 +2,23 @@ tanstack react form
 items/create-form ✔
 items/edit-form ❌
 
-tanstack query - mutations
-items/get-items-query ❌ (STREAMING ❌)
-items/useCreateItem ✔
-items/useUpdateItem ❌
-items/useDeleteItem ❌
+DB ACTIONS								SERVERFN									HOOKs
+----------------------------------------------------------------------------------------------------------------
+itmes/get-items-db ✔				     items/get-items-server ✔						items/use-get-items ✔
+items/insert-item-db ✔				     items/create-items-server ✔				     items/useCreateItem ✔
+items/update-item-db ❌				 items/update-items-server ❌      			   items/useUpdateItem ❌
+items/delete-item-db ❌				  items/delete-items-server ❌				     items/useDeleteItem ❌
+categories/get-categories-db ✔		categories/get-categories-server ✔			categories/get-categories-query ✔
+categories/insert-category-db ❌	    categories/create-categories-server ❌ 	categories/useCreateCategories ✔
+categories/update-category-db ❌	  categories/update-categories-server ❌	   categories/useUpdateCategories ❌
+categories/delete-category-db ❌	   categories/delete-categories-server ❌		categories/useDeleteCategories ❌
 
-categories/get-categories-query ✔ (STREAMING ❌)
-categories/useCreateCategories ✔
-categories/useUpdateCategories ❌
-categories/useDeleteCategories ❌
 
-serverFn con auth
-items/get-items-server ✔
-items/create-items-server ✔
-items/update-items-server ❌
-items/delete-items-server ❌
-categories/get-categories-server ✔
-categories/create-categories-server ❌
-categories/update-categories-server ❌
-categories/delete-categories-server ❌
 
-db actions
-itmes/get-items-db ✔
-items/insert-item-db ✔
-items/update-item-db ❌
-items/delete-item-db ❌
-categories/get-categories-db ✔
-categories/insert-category-db ❌
-categories/update-category-db ❌
-categories/delete-category-db ❌
+✔ hacer bien el createRouter por el streaming (defaultPendingMs: 0,	defaultPreload: "intent",defaultPreloadStaleTime: 0),
 
-colocar bien el route, para que precargue cuando hago hover on link
+✔ hacer bien el queryOptions, por el tema del refresco (refetchInterval: 60 * 1000,)
 
-hacer bien el queryOptions, por el tema del refresco
+✔ hacer bien el streaming cuando leo datos de la base
 
-hacer bien el streaming cuando leo datos de la base
+✔ hay  retraso en todas las operaciones de base de datos

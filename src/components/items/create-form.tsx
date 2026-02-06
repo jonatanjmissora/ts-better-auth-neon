@@ -21,7 +21,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select"
-import { X } from "lucide-react"
+import { Loader, X } from "lucide-react"
 
 export default function CreateForm({
 	sessionUserId,
@@ -148,37 +148,42 @@ export default function CreateForm({
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Servicio</FieldLabel>
 
-									<Select
-										value={
-											field.state.value ? String(field.state.value) : undefined
-										}
-										onValueChange={value => {
-											field.handleChange(Number(value))
-										}}
-									>
-										<SelectTrigger className="w-full">
-											<SelectValue placeholder="Seleccionar categoría" />
-										</SelectTrigger>
+									{isLoading && (
+										<div className="flex items-center gap-2">
+											Cargando... <Loader size={20} className="animate-spin" />
+										</div>
+									)}
+									{!isLoading && (
+										<Select
+											value={
+												field.state.value
+													? String(field.state.value)
+													: undefined
+											}
+											onValueChange={value => {
+												field.handleChange(Number(value))
+											}}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Seleccionar categoría" />
+											</SelectTrigger>
 
-										<SelectContent>
-											<SelectGroup>
-												<SelectLabel>Servicios</SelectLabel>
+											<SelectContent>
+												<SelectGroup>
+													<SelectLabel>Servicios</SelectLabel>
 
-												{isLoading ? (
-													<span>Cargando</span>
-												) : (
-													categories?.map(category => (
+													{categories?.map(category => (
 														<SelectItem
 															key={category.id}
 															value={String(category.id)}
 														>
 															{category.name}
 														</SelectItem>
-													))
-												)}
-											</SelectGroup>
-										</SelectContent>
-									</Select>
+													))}
+												</SelectGroup>
+											</SelectContent>
+										</Select>
+									)}
 
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>

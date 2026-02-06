@@ -1,9 +1,8 @@
 import { createItemServer } from "server/items/create-item-server"
-import { useMutation } from "@tanstack/react-query"
-import { getQueryClient } from "queries/querie-client"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export function useCreateItem(userId: string) {
-	const queryClient = getQueryClient()
+	const queryClient = useQueryClient()
 
 	return useMutation({
 		mutationFn: createItemServer,

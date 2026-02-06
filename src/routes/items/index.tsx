@@ -1,7 +1,5 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { createFileRoute } from "@tanstack/react-router"
-import { ItemType } from "db/items/schema"
-import { getItemsServer } from "server/items/get-items-server"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,26 +10,28 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Ellipsis } from "lucide-react"
+import { Suspense } from "react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { itemsQueryOptions } from "queries/items/items-query"
 
 export const Route = createFileRoute("/items/")({
 	component: RouteComponent,
-	loader: async () => {
-		const items = await getItemsServer()
-		return { items }
-	},
 })
 
 function RouteComponent() {
-	const { items } = Route.useLoaderData()
-
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<ItemsList items={items} />
+			<h2 className="text-2xl font-bold">Items</h2>
+			<Suspense fallback={<div>Cargando...</div>}>
+				<ItemsList />
+			</Suspense>
 		</section>
 	)
 }
 
-function ItemsList({ items }: { items: ItemType[] }) {
+function ItemsList() {
+	const { data: items } = useSuspenseQuery(itemsQueryOptions)
+
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
 			{items.map(item => (
