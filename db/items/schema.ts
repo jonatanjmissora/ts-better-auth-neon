@@ -28,5 +28,5 @@ export const items = pgTable(
 	})
 )
 
-export type Item = typeof items.$inferSelect
+export type ItemType = typeof items.$inferSelect
 export type NewItemType = typeof items.$inferInsert
