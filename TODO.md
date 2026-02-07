@@ -22,3 +22,15 @@ categories/delete-category-db ❌	   categories/delete-categories-server ❌		ca
 ✔ hacer bien el streaming cuando leo datos de la base
 
 ✔ hay  retraso en todas las operaciones de base de datos
+
+
+cuando usar getQueryClient() ? en loaders, server functions, providers, etc
+cuando usar useQueryClient() ? siempre que estes en componentes React. Es un hook.
+
+cuando usar Route.invalidate() ? si tu data proviene del loader y necesitas refrescar datos.
+cuando usar route.navigate() ? Cuando vas de una ruta a otra.
+cuando usar queryClient.invalidateQueries() ? cuando haces un mutation en cliente.
+
+cuando uso getSession() ? en loaders, server functions, providers, etc
+cuando uso const { session } = useSession() ? en componentes React. Consume la session que ya guarde en el
+root via loader.

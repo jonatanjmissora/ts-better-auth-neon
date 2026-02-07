@@ -57,8 +57,7 @@ export default function CreateForm({
 					return
 				}
 				toast.success("Item creado exitosamente")
-				router.navigate({ to: "/" })
-				router.invalidate()
+				router.navigate({ to: "/items" })
 			} catch (error) {
 				console.error("Error al crear el item", error)
 			}

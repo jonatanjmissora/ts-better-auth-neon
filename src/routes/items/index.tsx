@@ -9,7 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Ellipsis } from "lucide-react"
+import { Ellipsis, Pencil, Trash2 } from "lucide-react"
 import { Suspense } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { itemsQueryOptions } from "queries/items/items-query"
@@ -35,7 +35,10 @@ function ItemsList() {
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
 			{items.map(item => (
-				<Card className="w-full p-4 relative" key={item.id}>
+				<Card
+					className="flex flex-col gap-0 w-full p-4 relative text-xs 2xl:text-base"
+					key={item.id}
+				>
 					<div className="absolute top-2 right-2">
 						<DropdownMenuComponent />
 					</div>
@@ -57,18 +60,22 @@ const DropdownMenuComponent = () => {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" className="cursor-pointer">
-					<Ellipsis size={20} />
+					<Ellipsis size={14} />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-40 p-4" align="end">
+			<DropdownMenuContent
+				className="w-28 2xl:w-40 p-4 text-xs 2xl:text-base"
+				align="end"
+			>
 				<DropdownMenuGroup>
-					<DropdownMenuItem className="flex justify-end m-4">
+					<DropdownMenuItem className="flex justify-end m-1 2xl:m-4">
+						<Pencil size={14} />
 						Editar
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 
-					<DropdownMenuItem className="flex justify-end m-4">
-						Borrar
+					<DropdownMenuItem className="flex justify-end m-1 2xl:m-4">
+						<Trash2 size={14} /> Borrar
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
