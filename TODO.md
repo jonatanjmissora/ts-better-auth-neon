@@ -7,7 +7,7 @@ DB ACTIONS								SERVERFN									HOOKs
 itmes/get-items-db ✔				     items/get-items-server ✔						items/use-get-items ✔
 items/insert-item-db ✔				     items/create-items-server ✔				     items/useCreateItem ✔
 items/update-item-db ❌				 items/update-items-server ❌      			   items/useUpdateItem ❌
-items/delete-item-db ❌				  items/delete-items-server ❌				     items/useDeleteItem ❌
+items/delete-item-db ✔				    items/delete-items-server ✔				     items/useDeleteItem ✔
 categories/get-categories-db ✔		categories/get-categories-server ✔			categories/get-categories-query ✔
 categories/insert-category-db ❌	    categories/create-categories-server ❌ 	categories/useCreateCategories ✔
 categories/update-category-db ❌	  categories/update-categories-server ❌	   categories/useUpdateCategories ❌
@@ -38,7 +38,7 @@ root via loader.
 FALTA 
 ======
 
-que cuando haga la mutacion, actualizar sin tener que hacer refetch, solo con el onSuccess
+✔ que cuando haga la mutacion, actualizar sin tener que hacer refetch, solo con el onSuccess
 
 si en el DialogAlert, no es mejor hacer un form, asi veo el spinner cuando esta eliminando
 
