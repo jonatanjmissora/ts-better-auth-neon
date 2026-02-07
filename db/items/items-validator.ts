@@ -13,6 +13,8 @@ export const newItemValidator = z.object({
 	categoryId: z.number().min(1, "La categoría es requerida"),
 })
 
+export type ItemFormType = z.infer<typeof newItemValidator>
+
 export const itemIdValidator = z.object({
 	id: z.string().uuid("ID inválido"),
 })

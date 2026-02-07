@@ -5,6 +5,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { Toaster } from "sonner"
 import appCss from "../styles.css?url"
 import { Session } from "better-auth"
@@ -55,7 +56,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<QueryClientProvider client={queryClient}>
 					{children}
 					<Toaster />
-				</QueryClientProvider>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
@@ -65,8 +65,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							name: "Tanstack Router",
 							render: <TanStackRouterDevtoolsPanel />,
 						},
+						{
+							name: "Tanstack Query",
+							render: <ReactQueryDevtoolsPanel />,
+						},
 					]}
 				/>
+				</QueryClientProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -24,18 +24,16 @@ import {
 import { Loader, X } from "lucide-react"
 
 export default function CreateForm({
-	sessionUserId,
 	className,
 	...props
-}: React.ComponentProps<"div"> & { sessionUserId: string }) {
+}: React.ComponentProps<"div"> ) {
 	const router = useRouter()
+	const { data: categories, isLoading } = useQuery(categoriesQueryOptions)
 	const {
 		mutateAsync: createItemMutation,
 		isPending,
 		error,
-	} = useCreateItem(sessionUserId)
-
-	const { data: categories, isLoading } = useQuery(categoriesQueryOptions)
+	} = useCreateItem()
 
 	const form = useForm({
 		defaultValues: {
@@ -49,7 +47,8 @@ export default function CreateForm({
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				const result = await createItemMutation({ data: value })
+				const category = categories?.find(category => category.id === value.categoryId) ?? {id: 0, name: ""}
+				const result = await createItemMutation({ data: value, category})
 
 				if (!result) {
 					toast.error("Error al crear el item")

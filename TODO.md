@@ -41,3 +41,5 @@ FALTA
 que cuando haga la mutacion, actualizar sin tener que hacer refetch, solo con el onSuccess
 
 si en el DialogAlert, no es mejor hacer un form, asi veo el spinner cuando esta eliminando
+
+agregar el price a la tabla de categories
