@@ -67,7 +67,7 @@ export function LoginForm({
 				provider: "google",
 				callbackURL: "/",
 			})
-		} catch (err: any) {
+		} catch (_err) {
 			// error ANTES de redirigir
 			setLoading(false)
 			toast.error("No se pudo iniciar sesión con Google")

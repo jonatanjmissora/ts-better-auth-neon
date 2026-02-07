@@ -30,3 +30,9 @@ export const items = pgTable(
 
 export type ItemType = typeof items.$inferSelect
 export type NewItemType = typeof items.$inferInsert
+export type ResponseItemType = Omit<ItemType, "categoryId"> & {
+	category: {
+		id: number
+		name: string
+	}
+}

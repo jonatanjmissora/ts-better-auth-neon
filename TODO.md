@@ -34,3 +34,10 @@ cuando usar queryClient.invalidateQueries() ? cuando haces un mutation en client
 cuando uso getSession() ? en loaders, server functions, providers, etc
 cuando uso const { session } = useSession() ? en componentes React. Consume la session que ya guarde en el
 root via loader.
+
+FALTA 
+======
+
+que cuando haga la mutacion, actualizar sin tener que hacer refetch, solo con el onSuccess
+
+si en el DialogAlert, no es mejor hacer un form, asi veo el spinner cuando esta eliminando

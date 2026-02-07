@@ -7,7 +7,7 @@ import { FieldError } from "../ui/field"
 import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { itemValidator } from "db/items/items-validator"
+import { newItemValidator } from "db/items/items-validator"
 import { toast } from "sonner"
 import { useCreateItem } from "queries/items/use-create-item"
 import { categoriesQueryOptions } from "queries/categories/get-categories-query"
@@ -45,11 +45,10 @@ export default function CreateForm({
 			date: 0,
 		},
 		validators: {
-			onSubmit: itemValidator,
+			onSubmit: newItemValidator,
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				console.log("VALUE", value)
 				const result = await createItemMutation({ data: value })
 
 				if (!result) {
@@ -214,7 +213,15 @@ export default function CreateForm({
 					/>
 
 					<Field>
-						<Button type="submit">{isPending ? "Creando..." : "Crear"}</Button>
+						<Button type="submit" disabled={isPending}>
+							{isPending ? (
+								<div className="flex gap-2">
+									Creando... <Loader className="animate-spin"></Loader>
+								</div>
+							) : (
+								"Crear"
+							)}
+						</Button>
 					</Field>
 
 					{error && <p>{error.message}</p>}

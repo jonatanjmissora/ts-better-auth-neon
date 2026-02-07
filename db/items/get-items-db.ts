@@ -16,6 +16,7 @@ export async function getItemsDB(userId: string) {
 				id: categories.id,
 				name: categories.name,
 			},
+			userId: items.userId,
 		})
 		.from(items)
 		.innerJoin(categories, eq(items.categoryId, categories.id))
