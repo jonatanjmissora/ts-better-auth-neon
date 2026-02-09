@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
 import { newItemValidator } from "db/items/items-validator"
 import { toast } from "sonner"
-import { useCreateItem } from "queries/items/use-create-item"
 import { categoriesQueryOptions } from "queries/categories/get-categories-query"
 import { useQuery } from "@tanstack/react-query"
 import {
@@ -23,6 +22,7 @@ import {
 } from "../ui/select"
 import { Loader, X } from "lucide-react"
 import { itemQueryOptions } from "queries/items/items-query"
+import { useUpdateItem } from "queries/items/use-update-item"
 
 export default function EditForm({
 	itemId,
@@ -36,7 +36,7 @@ export default function EditForm({
 	const { data: item, isLoading: isLoadingItem } = useQuery(
 		itemQueryOptions(itemId)
 	)
-	const { mutateAsync: createItemMutation, isPending, error } = useCreateItem()
+	const { mutateAsync: updateItemMutation, isPending, error } = useUpdateItem()
 
 	const form = useForm({
 		defaultValues: {
@@ -53,7 +53,7 @@ export default function EditForm({
 				const category = categories?.find(
 					category => category.id === value.categoryId
 				) ?? { id: 0, name: "" }
-				const result = await createItemMutation({ data: value, category })
+				const result = await updateItemMutation({ data: value, category })
 
 				if (!result) {
 					toast.error("Error al crear el item")
@@ -102,15 +102,23 @@ export default function EditForm({
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={isLoadingItem ? "cargando..." : field.state.value}
-										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(e.target.value)}
-										aria-invalid={isInvalid}
-										placeholder="mi nombre"
-									/>
+									{isLoadingItem ? (
+										<div
+											className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border ${isLoadingItem ? "animate-pulse" : ""}`}
+										>
+											<Loader size={20} className="animate-spin" />
+										</div>
+									) : (
+										<Input
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={e => field.handleChange(e.target.value)}
+											aria-invalid={isInvalid}
+											placeholder="mi nombre"
+										/>
+									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)
@@ -125,15 +133,23 @@ export default function EditForm({
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Telefono</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={isLoadingItem ? "cargando..." : field.state.value}
-										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(Number(e.target.value))}
-										aria-invalid={isInvalid}
-										placeholder=""
-									/>
+									{isLoadingItem ? (
+										<div
+											className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border ${isLoadingItem ? "animate-pulse" : ""}`}
+										>
+											<Loader size={20} className="animate-spin" />
+										</div>
+									) : (
+										<Input
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={e => field.handleChange(Number(e.target.value))}
+											aria-invalid={isInvalid}
+											placeholder=""
+										/>
+									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)
@@ -151,7 +167,11 @@ export default function EditForm({
 									<FieldLabel htmlFor={field.name}>Servicio</FieldLabel>
 
 									{isLoadingCategories && (
-										<Loader size={20} className="animate-spin" />
+										<div
+											className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border ${isLoadingItem ? "animate-pulse" : ""}`}
+										>
+											<Loader size={20} className="animate-spin" />
+										</div>
 									)}
 									{!isLoadingCategories && (
 										<Select
@@ -199,15 +219,23 @@ export default function EditForm({
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Fecha</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={isLoadingItem ? "cargando..." : field.state.value}
-										onBlur={field.handleBlur}
-										onChange={e => field.handleChange(Number(e.target.value))}
-										aria-invalid={isInvalid}
-										placeholder=""
-									/>
+									{isLoadingItem ? (
+										<div
+											className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border ${isLoadingItem ? "animate-pulse" : ""}`}
+										>
+											<Loader size={20} className="animate-spin" />
+										</div>
+									) : (
+										<Input
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={e => field.handleChange(Number(e.target.value))}
+											aria-invalid={isInvalid}
+											placeholder=""
+										/>
+									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)
