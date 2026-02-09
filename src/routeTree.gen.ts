@@ -14,6 +14,7 @@ import { Route as LoginRouteRouteImport } from './routes/login/route'
 import { Route as ItemsRouteRouteImport } from './routes/items/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ItemsIndexRouteImport } from './routes/items/index'
+import { Route as ItemsEditRouteImport } from './routes/items/edit'
 import { Route as ItemsCreateRouteImport } from './routes/items/create'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -42,6 +43,11 @@ const ItemsIndexRoute = ItemsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ItemsRouteRoute,
 } as any)
+const ItemsEditRoute = ItemsEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ItemsRouteRoute,
+} as any)
 const ItemsCreateRoute = ItemsCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/items/create': typeof ItemsCreateRoute
+  '/items/edit': typeof ItemsEditRoute
   '/items/': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/items/create': typeof ItemsCreateRoute
+  '/items/edit': typeof ItemsEditRoute
   '/items': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/items/create': typeof ItemsCreateRoute
+  '/items/edit': typeof ItemsEditRoute
   '/items/': typeof ItemsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -88,10 +97,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/items/create'
+    | '/items/edit'
     | '/items/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/items/create' | '/items' | '/api/auth/$'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/items/create'
+    | '/items/edit'
+    | '/items'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
@@ -99,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/items/create'
+    | '/items/edit'
     | '/items/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -148,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemsIndexRouteImport
       parentRoute: typeof ItemsRouteRoute
     }
+    '/items/edit': {
+      id: '/items/edit'
+      path: '/edit'
+      fullPath: '/items/edit'
+      preLoaderRoute: typeof ItemsEditRouteImport
+      parentRoute: typeof ItemsRouteRoute
+    }
     '/items/create': {
       id: '/items/create'
       path: '/create'
@@ -167,11 +192,13 @@ declare module '@tanstack/react-router' {
 
 interface ItemsRouteRouteChildren {
   ItemsCreateRoute: typeof ItemsCreateRoute
+  ItemsEditRoute: typeof ItemsEditRoute
   ItemsIndexRoute: typeof ItemsIndexRoute
 }
 
 const ItemsRouteRouteChildren: ItemsRouteRouteChildren = {
   ItemsCreateRoute: ItemsCreateRoute,
+  ItemsEditRoute: ItemsEditRoute,
   ItemsIndexRoute: ItemsIndexRoute,
 }
 

@@ -6,3 +6,15 @@ export const itemsQueryOptions = queryOptions({
 	queryFn: () => getItemsServer(),
 	refetchInterval: 60 * 1000, // refrescar cada 60 segundos
 })
+
+export const itemQueryOptions = (id: string) =>
+	queryOptions({
+		queryKey: ["item", id],
+
+		queryFn: () => getItemByIdServer(id), // BACKUP
+
+		initialData: () => {
+			const items = queryClient.getQueryData<Item[]>(["items"])
+			return items?.find(item => item.id === id)
+		},
+	})

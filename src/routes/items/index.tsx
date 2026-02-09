@@ -1,32 +1,27 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
-	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Ellipsis, Pencil, Trash2 } from "lucide-react"
-import { startTransition, Suspense, useState } from "react"
+import { Ellipsis, Loader, Pencil, Trash2 } from "lucide-react"
+import { Suspense, useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { itemsQueryOptions } from "queries/items/items-query"
 import {
 	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ResponseItemType } from "db/items/schema"
 import { useDeleteItem } from "queries/items/use-delete-item"
 import { toast } from "sonner"
+import { useForm } from "@tanstack/react-form"
 
 export const Route = createFileRoute("/items/")({
 	component: RouteComponent,
@@ -35,7 +30,7 @@ export const Route = createFileRoute("/items/")({
 function RouteComponent() {
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<h2 className="text-2xl font-bold">Items</h2>
+			<h2 className="text-2xl font-bold underline mb-5">Items</h2>
 			<Suspense fallback={<div>Cargando...</div>}>
 				<ItemsList />
 			</Suspense>
@@ -70,9 +65,9 @@ function ItemsList() {
 }
 
 const DropdownMenuComponent = ({ item }: { item: ResponseItemType }) => {
-	const [isOpen, setIsOpen] = useState(false)
+	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	return (
-		<DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" className="cursor-pointer">
 					<Ellipsis size={14} />
@@ -83,15 +78,14 @@ const DropdownMenuComponent = ({ item }: { item: ResponseItemType }) => {
 				align="end"
 			>
 				<DropdownMenuGroup>
-					<DropdownMenuItem
-						className="flex justify-center gap-2 items-center m-1 2xl:m-4"
-						onClick={() => console.log("Editar")}
-					>
-						<Pencil size={14} />
-						Editar
-					</DropdownMenuItem>
+					<Link to={`/items/edit`} search={{ id: item.id }}>
+						<Button variant="ghost">
+							<Pencil size={14} />
+							Editar
+						</Button>
+					</Link>
 					<DropdownMenuSeparator />
-					<DeleteItemAlertDialog item={item} setIsOpen={setIsOpen} />
+					<DeleteItemAlertDialog item={item} setIsMenuOpen={setIsMenuOpen} />
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -100,23 +94,31 @@ const DropdownMenuComponent = ({ item }: { item: ResponseItemType }) => {
 
 export function DeleteItemAlertDialog({
 	item,
-	setIsOpen,
+	setIsMenuOpen,
 }: {
 	item: ResponseItemType
-	setIsOpen: (open: boolean) => void
+	setIsMenuOpen: (open: boolean) => void
 }) {
 	const { mutateAsync: deleteItemMutation, isPending } = useDeleteItem(item.id)
+	const router = useRouter()
 
-	const handleDelete = async () => {
-		setIsOpen(false)
-		startTransition(async () => {
-			toast.promise(deleteItemMutation(), {
-				loading: "borrando item...",
-				success: "item borrado exitosamente",
-				error: "Error al borrar item",
-			})
-		})
-	}
+	const form = useForm({
+		onSubmit: async () => {
+			try {
+				console.log("ITEM", item)
+				const result = await deleteItemMutation()
+
+				if (!result) {
+					toast.error("Error al eliminar el item")
+					return
+				}
+				toast.success("Item eliminado exitosamente")
+				router.invalidate()
+			} catch (error) {
+				console.error("Error al eliminar el item", error)
+			}
+		},
+	})
 
 	return (
 		<AlertDialog>
@@ -127,21 +129,44 @@ export function DeleteItemAlertDialog({
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
-				<AlertDialogHeader>
-					<AlertDialogTitle>¿Estas seguro de borrar el dato?</AlertDialogTitle>
-					<AlertDialogDescription>
+				<AlertDialogDescription></AlertDialogDescription>
+
+				<form
+					id="create-form"
+					className="flex flex-col items-center justify-center gap-2"
+					onSubmit={e => {
+						e.preventDefault()
+						form.handleSubmit()
+					}}
+				>
+					<p className="text-xl font-semibold text-center">
+						¿Estás seguro de borrar el item?
+					</p>
+
+					<p className="text-center opacity-50 text-xs balance">
 						Esta acción no se puede deshacer. Esto eliminará permanentemente el
 						dato de nuestros servidores.
-					</AlertDialogDescription>
-				</AlertDialogHeader>
-				<AlertDialogFooter>
-					<AlertDialogCancel onClick={() => setIsOpen(false)}>
-						Cancelar
-					</AlertDialogCancel>
-					<AlertDialogAction onClick={handleDelete} disabled={isPending}>
-						{isPending ? "Eliminando..." : "Eliminar"}
-					</AlertDialogAction>
-				</AlertDialogFooter>
+					</p>
+
+					<div className="flex justify-center items-center gap-2">
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={() => setIsMenuOpen(false)}
+						>
+							Cancelar
+						</Button>
+						<Button type="submit" disabled={isPending}>
+							{isPending ? (
+								<div className="flex gap-2">
+									Eliminando... <Loader className="animate-spin"></Loader>
+								</div>
+							) : (
+								"Eliminar"
+							)}
+						</Button>
+					</div>
+				</form>
 			</AlertDialogContent>
 		</AlertDialog>
 	)
