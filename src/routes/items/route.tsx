@@ -8,8 +8,6 @@ export const Route = createFileRoute("/items")({
 	loader: async ({ context }) => {
 		await protectedRoute()
 		context.queryClient.ensureQueryData(itemsQueryOptions)
-
-		return {}
 	},
 })
 

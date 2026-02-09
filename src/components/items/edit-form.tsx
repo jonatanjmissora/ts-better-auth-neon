@@ -22,33 +22,38 @@ import {
 	SelectValue,
 } from "../ui/select"
 import { Loader, X } from "lucide-react"
+import { itemQueryOptions } from "queries/items/items-query"
 
-export default function CreateForm({
+export default function EditForm({
+	itemId,
 	className,
 	...props
-}: React.ComponentProps<"div"> ) {
+}: React.ComponentProps<"div"> & { itemId: string }) {
 	const router = useRouter()
-	const { data: categories, isLoading } = useQuery(categoriesQueryOptions)
-	const {
-		mutateAsync: createItemMutation,
-		isPending,
-		error,
-	} = useCreateItem()
+	const { data: categories, isLoading: isLoadingCategories } = useQuery(
+		categoriesQueryOptions
+	)
+	const { data: item, isLoading: isLoadingItem } = useQuery(
+		itemQueryOptions(itemId)
+	)
+	const { mutateAsync: createItemMutation, isPending, error } = useCreateItem()
 
 	const form = useForm({
 		defaultValues: {
-			name: "",
-			phone: 0,
-			categoryId: 0,
-			date: 0,
+			name: item?.name ?? "",
+			phone: item?.phone ?? 0,
+			categoryId: item?.category.id ?? 0,
+			date: item?.date ?? 0,
 		},
 		validators: {
 			onSubmit: newItemValidator,
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				const category = categories?.find(category => category.id === value.categoryId) ?? {id: 0, name: ""}
-				const result = await createItemMutation({ data: value, category})
+				const category = categories?.find(
+					category => category.id === value.categoryId
+				) ?? { id: 0, name: "" }
+				const result = await createItemMutation({ data: value, category })
 
 				if (!result) {
 					toast.error("Error al crear el item")
@@ -100,7 +105,7 @@ export default function CreateForm({
 									<Input
 										id={field.name}
 										name={field.name}
-										value={field.state.value}
+										value={isLoadingItem ? "cargando..." : field.state.value}
 										onBlur={field.handleBlur}
 										onChange={e => field.handleChange(e.target.value)}
 										aria-invalid={isInvalid}
@@ -123,7 +128,7 @@ export default function CreateForm({
 									<Input
 										id={field.name}
 										name={field.name}
-										value={field.state.value}
+										value={isLoadingItem ? "cargando..." : field.state.value}
 										onBlur={field.handleBlur}
 										onChange={e => field.handleChange(Number(e.target.value))}
 										aria-invalid={isInvalid}
@@ -145,12 +150,10 @@ export default function CreateForm({
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Servicio</FieldLabel>
 
-									{isLoading && (
-										<div className="flex items-center gap-2">
-											Cargando... <Loader size={20} className="animate-spin" />
-										</div>
+									{isLoadingCategories && (
+										<Loader size={20} className="animate-spin" />
 									)}
-									{!isLoading && (
+									{!isLoadingCategories && (
 										<Select
 											value={
 												field.state.value
@@ -199,7 +202,7 @@ export default function CreateForm({
 									<Input
 										id={field.name}
 										name={field.name}
-										value={field.state.value}
+										value={isLoadingItem ? "cargando..." : field.state.value}
 										onBlur={field.handleBlur}
 										onChange={e => field.handleChange(Number(e.target.value))}
 										aria-invalid={isInvalid}

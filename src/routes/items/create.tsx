@@ -12,7 +12,7 @@ function RouteComponent() {
 
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<CreateForm sessionUserId={session.user.id} />
+			<CreateForm />
 		</section>
 	)
 }

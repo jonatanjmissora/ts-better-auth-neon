@@ -1,3 +1,4 @@
+import EditForm from "@/components/items/edit-form"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
@@ -12,7 +13,10 @@ export const Route = createFileRoute("/items/edit")({
 
 function RouteComponent() {
 	const { id } = Route.useSearch()
-	// const item = getItemFromQuery(id)
 
-	return <div>Hello "/items/edit"! {JSON.stringify(id)}</div>
+	return (
+		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
+			<EditForm itemId={id} />
+		</section>
+	)
 }

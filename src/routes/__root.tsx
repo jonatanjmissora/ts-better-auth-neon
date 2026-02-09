@@ -10,12 +10,15 @@ import { Toaster } from "sonner"
 import appCss from "../styles.css?url"
 import { Session } from "better-auth"
 import { getSession } from "server/getSession"
-import { QueryClientProvider } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getQueryClient } from "queries/querie-client"
 
-export const Route = createRootRouteWithContext<{
+export type RouterContext = {
 	session: Session | null
-}>()({
+	queryClient: QueryClient
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
 	head: () => ({
 		meta: [
 			{
@@ -56,21 +59,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<QueryClientProvider client={queryClient}>
 					{children}
 					<Toaster />
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-						{
-							name: "Tanstack Query",
-							render: <ReactQueryDevtoolsPanel />,
-						},
-					]}
-				/>
+					<TanStackDevtools
+						config={{
+							position: "bottom-right",
+						}}
+						plugins={[
+							{
+								name: "Tanstack Router",
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+							{
+								name: "Tanstack Query",
+								render: <ReactQueryDevtoolsPanel />,
+							},
+						]}
+					/>
 				</QueryClientProvider>
 				<Scripts />
 			</body>
