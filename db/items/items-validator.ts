@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const newItemValidator = z.object({
+export const itemFormValidator = z.object({
 	name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
 	date: z
 		.number()
@@ -13,8 +13,15 @@ export const newItemValidator = z.object({
 	categoryId: z.number().min(1, "La categoría es requerida"),
 })
 
-export type ItemFormType = z.infer<typeof newItemValidator>
+export type ItemFormType = z.infer<typeof itemFormValidator>
 
 export const itemIdValidator = z.object({
 	id: z.string().uuid("ID inválido"),
 })
+
+export const updateItemValidator = itemFormValidator.extend({
+	id: z.string().min(1, "Id requerido"),
+	userId: z.string().min(1, "UserId requerido"),
+})
+
+export type UpdateItemType = z.infer<typeof updateItemValidator>

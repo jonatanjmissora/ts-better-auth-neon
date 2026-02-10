@@ -7,7 +7,6 @@ import { FieldError } from "../ui/field"
 import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { newItemValidator } from "db/items/items-validator"
 import { toast } from "sonner"
 import { categoriesQueryOptions } from "queries/categories/get-categories-query"
 import { useQuery } from "@tanstack/react-query"
@@ -23,6 +22,8 @@ import {
 import { Loader, X } from "lucide-react"
 import { itemQueryOptions } from "queries/items/items-query"
 import { useUpdateItem } from "queries/items/use-update-item"
+import { setItemWithCategoryId } from "lib/utils"
+import { itemFormValidator } from "db/items/items-validator"
 
 export default function EditForm({
 	itemId,
@@ -36,7 +37,22 @@ export default function EditForm({
 	const { data: item, isLoading: isLoadingItem } = useQuery(
 		itemQueryOptions(itemId)
 	)
-	const { mutateAsync: updateItemMutation, isPending, error } = useUpdateItem()
+	const {
+		mutateAsync: updateItemMutation,
+		isPending,
+		error,
+	} = useUpdateItem(
+		setItemWithCategoryId(
+			item ?? {
+				id: "",
+				name: "",
+				phone: 0,
+				date: 0,
+				category: { id: 0, name: "" },
+				userId: "",
+			}
+		)
+	)
 
 	const form = useForm({
 		defaultValues: {
@@ -46,21 +62,22 @@ export default function EditForm({
 			date: item?.date ?? 0,
 		},
 		validators: {
-			onSubmit: newItemValidator,
+			onSubmit: itemFormValidator,
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				const category = categories?.find(
-					category => category.id === value.categoryId
-				) ?? { id: 0, name: "" }
-				const result = await updateItemMutation({ data: value, category })
+				console.log("VALUE", value)
+				// const category = categories?.find(
+				// 	category => category.id === value.categoryId
+				// ) ?? { id: 0, name: "" }
+				// const result = await updateItemMutation({ data: value, category })
 
-				if (!result) {
-					toast.error("Error al crear el item")
-					return
-				}
-				toast.success("Item creado exitosamente")
-				router.navigate({ to: "/items" })
+				// if (!result) {
+				// 	toast.error("Error al crear el item")
+				// 	return
+				// }
+				// toast.success("Item creado exitosamente")
+				// router.navigate({ to: "/items" })
 			} catch (error) {
 				console.error("Error al crear el item", error)
 			}
@@ -85,7 +102,7 @@ export default function EditForm({
 				</Button>
 			</div>
 			<form
-				id="create-form"
+				id="edit-form"
 				onSubmit={e => {
 					e.preventDefault()
 					form.handleSubmit()
@@ -109,15 +126,18 @@ export default function EditForm({
 											<Loader size={20} className="animate-spin" />
 										</div>
 									) : (
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={e => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="mi nombre"
-										/>
+										!isLoadingItem &&
+										item && (
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={e => field.handleChange(e.target.value)}
+												aria-invalid={isInvalid}
+												placeholder="mi nombre"
+											/>
+										)
 									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
@@ -140,15 +160,20 @@ export default function EditForm({
 											<Loader size={20} className="animate-spin" />
 										</div>
 									) : (
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={e => field.handleChange(Number(e.target.value))}
-											aria-invalid={isInvalid}
-											placeholder=""
-										/>
+										!isLoadingItem &&
+										item && (
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={e =>
+													field.handleChange(Number(e.target.value))
+												}
+												aria-invalid={isInvalid}
+												placeholder=""
+											/>
+										)
 									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
@@ -173,7 +198,7 @@ export default function EditForm({
 											<Loader size={20} className="animate-spin" />
 										</div>
 									)}
-									{!isLoadingCategories && (
+									{!isLoadingCategories && !isLoadingItem && item && (
 										<Select
 											value={
 												field.state.value
@@ -226,15 +251,20 @@ export default function EditForm({
 											<Loader size={20} className="animate-spin" />
 										</div>
 									) : (
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={e => field.handleChange(Number(e.target.value))}
-											aria-invalid={isInvalid}
-											placeholder=""
-										/>
+										!isLoadingItem &&
+										item && (
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={e =>
+													field.handleChange(Number(e.target.value))
+												}
+												aria-invalid={isInvalid}
+												placeholder=""
+											/>
+										)
 									)}
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
@@ -243,20 +273,27 @@ export default function EditForm({
 					/>
 
 					<Field>
-						<Button type="submit" disabled={isPending}>
+						<Button
+							type="submit"
+							disabled={isPending || isLoadingItem || !item}
+						>
 							{isPending ? (
 								<div className="flex gap-2">
-									Creando... <Loader className="animate-spin"></Loader>
+									Editando... <Loader className="animate-spin"></Loader>
 								</div>
 							) : (
-								"Crear"
+								"Editar"
 							)}
 						</Button>
 					</Field>
 
-					{error && <p>{error.message}</p>}
+					{error && <p>{error?.message}</p>}
 				</FieldGroup>
 			</form>
+
+			{!isLoadingItem && !item && (
+				<p className="text-red-700 text-center">⚠ Item no encontrado</p>
+			)}
 		</div>
 	)
 }

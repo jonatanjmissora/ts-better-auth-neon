@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequest } from "@tanstack/react-start/server"
 import { insertItemDB } from "db/items/insert-item-db"
-import { newItemValidator } from "db/items/items-validator"
+import { itemFormValidator } from "db/items/items-validator"
 import { protectedServerFn } from "lib/auth/protected-serverFn"
 
 export const createItemServer = createServerFn({ method: "POST" })
-	.inputValidator(newItemValidator)
+	.inputValidator(itemFormValidator)
 	.handler(async ({ data }) => {
 		const request = getRequest()
 		const session = await protectedServerFn(request)

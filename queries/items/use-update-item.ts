@@ -1,20 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { ResponseItemType } from "db/schema"
+import { ItemType, ItemWithCategoryType } from "db/schema"
+import { updateItemServer } from "server/items/update-item-server"
 
-export function useUpdateItem(itemId: string) {
+export function useUpdateItem(item: ItemType) {
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: ({ data }: { data: ResponseItemType }) =>
-			deleteItemServer({ data: { item } }),
-		onSuccess: ({ variables }) => {
-			queryClient.setQueryData<ResponseItemType[]>(["items"], oldItems => {
+		mutationFn: updateItemServer,
+		onSuccess: ({ data, variables }) => {
+			queryClient.setQueryData<ItemWithCategoryType[]>(["items"], oldItems => {
 				if (!oldItems) return oldItems
 				const oldItem = oldItems.find(item => item.id === itemId)
 				if (!oldItem) return oldItems
-				return oldItems.map(item =>
-					item.id === itemId ? variables.data : item
-				)
+				return oldItems.map(item => (item.id === itemId ? data : item))
 			})
 		},
 	})

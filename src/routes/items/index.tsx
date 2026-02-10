@@ -1,5 +1,5 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Ellipsis, Loader, Pencil, Trash2 } from "lucide-react"
+import { Ellipsis, Pencil, Trash2 } from "lucide-react"
 import { Suspense, useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { itemsQueryOptions } from "queries/items/items-query"
@@ -18,10 +18,8 @@ import {
 	AlertDialogDescription,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { ResponseItemType } from "db/items/schema"
-import { useDeleteItem } from "queries/items/use-delete-item"
-import { toast } from "sonner"
-import { useForm } from "@tanstack/react-form"
+import { ItemWithCategoryType } from "db/items/schema"
+import DeleteForm from "@/components/items/delete-form"
 
 export const Route = createFileRoute("/items/")({
 	component: RouteComponent,
@@ -64,7 +62,7 @@ function ItemsList() {
 	)
 }
 
-const DropdownMenuComponent = ({ item }: { item: ResponseItemType }) => {
+const DropdownMenuComponent = ({ item }: { item: ItemWithCategoryType }) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -96,30 +94,9 @@ export function DeleteItemAlertDialog({
 	item,
 	setIsMenuOpen,
 }: {
-	item: ResponseItemType
+	item: ItemWithCategoryType
 	setIsMenuOpen: (open: boolean) => void
 }) {
-	const { mutateAsync: deleteItemMutation, isPending } = useDeleteItem(item.id)
-	const router = useRouter()
-
-	const form = useForm({
-		onSubmit: async () => {
-			try {
-				console.log("ITEM", item)
-				const result = await deleteItemMutation()
-
-				if (!result) {
-					toast.error("Error al eliminar el item")
-					return
-				}
-				toast.success("Item eliminado exitosamente")
-				router.invalidate()
-			} catch (error) {
-				console.error("Error al eliminar el item", error)
-			}
-		},
-	})
-
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -131,42 +108,7 @@ export function DeleteItemAlertDialog({
 			<AlertDialogContent>
 				<AlertDialogDescription></AlertDialogDescription>
 
-				<form
-					id="create-form"
-					className="flex flex-col items-center justify-center gap-2"
-					onSubmit={e => {
-						e.preventDefault()
-						form.handleSubmit()
-					}}
-				>
-					<p className="text-xl font-semibold text-center">
-						¿Estás seguro de borrar el item?
-					</p>
-
-					<p className="text-center opacity-50 text-xs balance">
-						Esta acción no se puede deshacer. Esto eliminará permanentemente el
-						dato de nuestros servidores.
-					</p>
-
-					<div className="flex justify-center items-center gap-2">
-						<Button
-							type="button"
-							variant="ghost"
-							onClick={() => setIsMenuOpen(false)}
-						>
-							Cancelar
-						</Button>
-						<Button type="submit" disabled={isPending}>
-							{isPending ? (
-								<div className="flex gap-2">
-									Eliminando... <Loader className="animate-spin"></Loader>
-								</div>
-							) : (
-								"Eliminar"
-							)}
-						</Button>
-					</div>
-				</form>
+				<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />
 			</AlertDialogContent>
 		</AlertDialog>
 	)

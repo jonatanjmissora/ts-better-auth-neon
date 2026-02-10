@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { ResponseItemType } from "db/schema"
+import { ItemWithCategoryType } from "db/schema"
 import { getQueryClient } from "queries/querie-client"
 import { getItemByIdServer } from "server/items/get-item-by-id-server"
 import { getItemsServer } from "server/items/get-items-server"
@@ -19,7 +19,7 @@ export const itemQueryOptions = (itemId: string) =>
 		queryFn: () => getItemByIdServer({ data: { itemId } }), // BACKUP
 
 		initialData: () => {
-			const items = queryClient.getQueryData<ResponseItemType[]>(["items"])
+			const items = queryClient.getQueryData<ItemWithCategoryType[]>(["items"])
 			return items?.find(item => item.id === itemId)
 		},
 	})

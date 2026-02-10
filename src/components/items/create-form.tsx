@@ -7,7 +7,7 @@ import { FieldError } from "../ui/field"
 import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { newItemValidator } from "db/items/items-validator"
+import { itemFormValidator } from "db/items/items-validator"
 import { toast } from "sonner"
 import { useCreateItem } from "queries/items/use-create-item"
 import { categoriesQueryOptions } from "queries/categories/get-categories-query"
@@ -26,14 +26,10 @@ import { Loader, X } from "lucide-react"
 export default function CreateForm({
 	className,
 	...props
-}: React.ComponentProps<"div"> ) {
+}: React.ComponentProps<"div">) {
 	const router = useRouter()
 	const { data: categories, isLoading } = useQuery(categoriesQueryOptions)
-	const {
-		mutateAsync: createItemMutation,
-		isPending,
-		error,
-	} = useCreateItem()
+	const { mutateAsync: createItemMutation, isPending, error } = useCreateItem()
 
 	const form = useForm({
 		defaultValues: {
@@ -43,12 +39,14 @@ export default function CreateForm({
 			date: 0,
 		},
 		validators: {
-			onSubmit: newItemValidator,
+			onSubmit: itemFormValidator,
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				const category = categories?.find(category => category.id === value.categoryId) ?? {id: 0, name: ""}
-				const result = await createItemMutation({ data: value, category})
+				const category = categories?.find(
+					category => category.id === value.categoryId
+				) ?? { id: 0, name: "" }
+				const result = await createItemMutation({ data: value, category })
 
 				if (!result) {
 					toast.error("Error al crear el item")

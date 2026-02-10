@@ -46,3 +46,6 @@ agregar el price a la tabla de categories
 
 ver cuando recargo en ruta en /edit, tengo que traer 2 quries, el de item y el de category, hay que ver si se puede un
 promiseAll
+
+hace un errorComponent para el root, con su correspondiente mensaje de error
+

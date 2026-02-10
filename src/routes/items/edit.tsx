@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 
 const SearchSchema = z.object({
-	id: z.string(),
+	id: z.coerce.string(),
 })
 
 export const Route = createFileRoute("/items/edit")({
@@ -16,7 +16,7 @@ function RouteComponent() {
 
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<EditForm itemId={id} />
+			{id ? <EditForm itemId={id} /> : <p>Item sin ID en url</p>}
 		</section>
 	)
 }
