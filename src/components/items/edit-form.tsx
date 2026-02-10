@@ -22,7 +22,6 @@ import {
 import { Loader, X } from "lucide-react"
 import { itemQueryOptions } from "queries/items/items-query"
 import { useUpdateItem } from "queries/items/use-update-item"
-import { setItemWithCategoryId } from "lib/utils"
 import { itemFormValidator } from "db/items/items-validator"
 
 export default function EditForm({
@@ -37,22 +36,7 @@ export default function EditForm({
 	const { data: item, isLoading: isLoadingItem } = useQuery(
 		itemQueryOptions(itemId)
 	)
-	const {
-		mutateAsync: updateItemMutation,
-		isPending,
-		error,
-	} = useUpdateItem(
-		setItemWithCategoryId(
-			item ?? {
-				id: "",
-				name: "",
-				phone: 0,
-				date: 0,
-				category: { id: 0, name: "" },
-				userId: "",
-			}
-		)
-	)
+	const { mutateAsync: updateItemMutation, isPending, error } = useUpdateItem()
 
 	const form = useForm({
 		defaultValues: {
@@ -66,18 +50,26 @@ export default function EditForm({
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				console.log("VALUE", value)
-				// const category = categories?.find(
-				// 	category => category.id === value.categoryId
-				// ) ?? { id: 0, name: "" }
-				// const result = await updateItemMutation({ data: value, category })
+				const category = categories?.find(
+					category => category.id === value.categoryId
+				)
+				if (!category || !item) {
+					return
+				}
+				const updatedItem = {
+					...value,
+					id: item.id,
+					userId: item.userId,
+				}
+				console.log("updated", updatedItem)
+				const result = await updateItemMutation({ data: updatedItem, category })
 
-				// if (!result) {
-				// 	toast.error("Error al crear el item")
-				// 	return
-				// }
-				// toast.success("Item creado exitosamente")
-				// router.navigate({ to: "/items" })
+				if (!result) {
+					toast.error("Error al crear el item")
+					return
+				}
+				toast.success("Item creado exitosamente")
+				router.navigate({ to: "/items" })
 			} catch (error) {
 				console.error("Error al crear el item", error)
 			}

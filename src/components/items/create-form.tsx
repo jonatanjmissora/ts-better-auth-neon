@@ -45,7 +45,8 @@ export default function CreateForm({
 			try {
 				const category = categories?.find(
 					category => category.id === value.categoryId
-				) ?? { id: 0, name: "" }
+				)
+				if (!category) return
 				const result = await createItemMutation({ data: value, category })
 
 				if (!result) {

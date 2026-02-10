@@ -49,3 +49,5 @@ promiseAll
 
 hace un errorComponent para el root, con su correspondiente mensaje de error
 
+controlar que no se actualiza el cache de items, cuando hago el update. Lo veo en /items list, pero no en /editar
+

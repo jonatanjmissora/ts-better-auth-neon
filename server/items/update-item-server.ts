@@ -10,9 +10,5 @@ export const updateItemServer = createServerFn({ method: "POST" })
 		const request = getRequest()
 		await protectedServerFn(request)
 
-		const updatedItem = {
-			...data,
-		}
-
-		return await updateItemDB(updatedItem)
+		return await updateItemDB(data)
 	})

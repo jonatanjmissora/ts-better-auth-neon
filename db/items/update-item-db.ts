@@ -7,20 +7,22 @@ import { UpdateItemType } from "./items-validator"
 
 export async function updateItemDB(updatedItem: UpdateItemType) {
 	await delay()
-	return await db
+	console.log("updatedItem", updatedItem)
+	const result = await db
 		.update(items)
 		.set({
-			id: updatedItem.id,
 			name: updatedItem.name,
 			phone: updatedItem.phone,
 			date: updatedItem.date,
 			categoryId: updatedItem.categoryId,
-			userId: updatedItem.userId,
 		})
-		.from(items)
-		.innerJoin(categories, eq(items.categoryId, categories.id))
+		.from(categories)
 		.where(
-			and(eq(items.id, updatedItem.id), eq(items.userId, updatedItem.userId))
+			and(
+				eq(items.id, updatedItem.id),
+				eq(items.userId, updatedItem.userId),
+				eq(items.categoryId, categories.id)
+			)
 		)
 		.returning({
 			id: items.id,
@@ -33,4 +35,5 @@ export async function updateItemDB(updatedItem: UpdateItemType) {
 				name: categories.name,
 			},
 		})
+	return result[0]
 }
