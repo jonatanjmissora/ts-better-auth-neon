@@ -8,7 +8,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Ellipsis, Pencil, Trash2 } from "lucide-react"
+import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react"
 import { Suspense, useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { itemsQueryOptions } from "queries/items/items-query"
@@ -28,7 +28,18 @@ export const Route = createFileRoute("/items/")({
 function RouteComponent() {
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<h2 className="text-2xl font-bold underline mb-5">Items</h2>
+			<div className="flex items-center justify-between w-3/4">
+				<div></div>
+				<span className="text-2xl font-bold underline mb-5">Items</span>
+				<Link to="/items/create">
+					<Button
+						variant="link"
+						className="text-lg font-semibold flex items-center gap-2"
+					>
+						<Plus size={16} /> Nuevo
+					</Button>
+				</Link>
+			</div>
 			<Suspense fallback={<div>Cargando...</div>}>
 				<ItemsList />
 			</Suspense>
@@ -38,6 +49,23 @@ function RouteComponent() {
 
 function ItemsList() {
 	const { data: items } = useSuspenseQuery(itemsQueryOptions)
+
+	if (!items || items.length === 0) {
+		return (
+			<div className="flex flex-col items-center">
+				<p>No hay items</p>
+
+				<div className="flex items-center gap-2">
+					<span>Por favor agregue un</span>
+					<Link to="/items/create">
+						<Button variant="link" className="text-base">
+							nuevo item
+						</Button>
+					</Link>
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className="flex flex-col gap-3 w-3/4">

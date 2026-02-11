@@ -26,6 +26,7 @@ export default function CreateForm({
 	const form = useForm({
 		defaultValues: {
 			name: "",
+			price: 0,
 		},
 		validators: {
 			onSubmit: categoryFormValidator,
@@ -57,7 +58,7 @@ export default function CreateForm({
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={() => router.navigate({ to: "/items" })}
+					onClick={() => router.navigate({ to: "/categories" })}
 				>
 					<X size={20} />
 				</Button>
@@ -86,6 +87,29 @@ export default function CreateForm({
 										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={e => field.handleChange(e.target.value)}
+										aria-invalid={isInvalid}
+										placeholder="mi nombre"
+									/>
+									{isInvalid && <FieldError errors={field.state.meta.errors} />}
+								</Field>
+							)
+						}}
+					/>
+
+					<form.Field
+						name="price"
+						children={field => {
+							const isInvalid =
+								field.state.meta.isTouched && !field.state.meta.isValid
+							return (
+								<Field data-invalid={isInvalid} className="gap-1">
+									<FieldLabel htmlFor={field.name}>Precio</FieldLabel>
+									<Input
+										id={field.name}
+										name={field.name}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={e => field.handleChange(Number(e.target.value))}
 										aria-invalid={isInvalid}
 										placeholder="mi nombre"
 									/>

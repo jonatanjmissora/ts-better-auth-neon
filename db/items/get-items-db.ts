@@ -20,5 +20,6 @@ export async function getItemsDB(userId: string) {
 		})
 		.from(items)
 		.innerJoin(categories, eq(items.categoryId, categories.id))
+		.orderBy(items.date)
 		.where(eq(items.userId, userId))
 }

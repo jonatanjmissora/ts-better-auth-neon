@@ -6,7 +6,7 @@ import { protectedServerFn } from "lib/auth/protected-serverFn"
 export const getCategoriesServer = createServerFn({ method: "GET" }).handler(
 	async () => {
 		const request = getRequest()
-		await protectedServerFn(request)
-		return await getCategoriesDB()
+		const session = await protectedServerFn(request)
+		return await getCategoriesDB(session.user.id)
 	}
 )

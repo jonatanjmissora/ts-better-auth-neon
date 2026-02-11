@@ -8,8 +8,12 @@ export const createCategoryServer = createServerFn({ method: "POST" })
 	.inputValidator(categoryFormValidator)
 	.handler(async ({ data }) => {
 		const request = getRequest()
-		await protectedServerFn(request)
-		const newCategory = { ...data, id: 4 }
+		const session = await protectedServerFn(request)
+		const newCategory = {
+			...data,
+			id: crypto.randomUUID(),
+			userId: session.user.id,
+		}
 
 		const result = await insertCategoryDB(newCategory)
 		return result[0]

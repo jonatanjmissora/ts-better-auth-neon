@@ -1,8 +1,13 @@
-import { pgTable, serial, text } from "drizzle-orm/pg-core"
+import { user } from "db/users/schema"
+import { integer, pgTable, text } from "drizzle-orm/pg-core"
 
 export const categories = pgTable("categories", {
-	id: serial("id").primaryKey(),
+	id: text("id").primaryKey(),
 	name: text("name").notNull(),
+	price: integer("price").notNull(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
 })
 
 export type CategoryType = typeof categories.$inferSelect

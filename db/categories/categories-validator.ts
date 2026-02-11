@@ -2,6 +2,7 @@ import { z } from "zod"
 
 export const categoryFormValidator = z.object({
 	name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
+	price: z.number().min(0, "El precio debe ser mayor o igual a 0"),
 })
 
 export type CategoryFormType = z.infer<typeof categoryFormValidator>

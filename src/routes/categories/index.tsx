@@ -16,7 +16,7 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { CategoryType } from "db/categories/schema"
-import { Ellipsis, Pencil, Trash2 } from "lucide-react"
+import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react"
 import { categoriesQueryOptions } from "queries/categories/categories-query"
 import { Suspense, useState } from "react"
 
@@ -27,7 +27,18 @@ export const Route = createFileRoute("/categories/")({
 function RouteComponent() {
 	return (
 		<section className="pt-10 2xl:pt-20 flex flex-col items-center">
-			<h2 className="text-2xl font-bold underline mb-5">Categories</h2>
+			<div className="flex items-center justify-between w-3/4">
+				<div></div>
+				<span className="text-2xl font-bold underline mb-5">Categories</span>
+				<Link to="/categories/create">
+					<Button
+						variant="link"
+						className="text-lg font-semibold flex items-center gap-2"
+					>
+						<Plus size={16} /> Nuevo
+					</Button>
+				</Link>
+			</div>
 			<Suspense fallback={<div>Cargando...</div>}>
 				<CategoryList />
 			</Suspense>
@@ -37,6 +48,23 @@ function RouteComponent() {
 
 function CategoryList() {
 	const { data: categories } = useSuspenseQuery(categoriesQueryOptions)
+
+	if (!categories || categories.length === 0) {
+		return (
+			<div className="flex flex-col items-center">
+				<p>No hay categorías</p>
+
+				<div className="flex items-center gap-2">
+					<span>Por favor agregue una</span>
+					<Link to="/categories/create">
+						<Button variant="link" className="text-base">
+							nueva categoría
+						</Button>
+					</Link>
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
@@ -51,6 +79,7 @@ function CategoryList() {
 					<CardTitle>ID: {category.id}</CardTitle>
 					<CardContent className="flex gap-2 items-center justify-around">
 						<span>Nombre: {category.name}</span>
+						<span>Precio: $ {category.price}</span>
 					</CardContent>
 				</Card>
 			))}

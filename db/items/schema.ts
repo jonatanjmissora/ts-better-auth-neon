@@ -1,4 +1,4 @@
-import { pgTable, text, integer, index, bigint } from "drizzle-orm/pg-core"
+import { pgTable, text, index, bigint } from "drizzle-orm/pg-core"
 import { user } from "../users/schema"
 import { categories } from "db/categories/schema"
 
@@ -13,7 +13,7 @@ export const items = pgTable(
 
 		name: text("name").notNull(),
 
-		categoryId: integer("category_id")
+		categoryId: text("category_id")
 			.notNull()
 			.references(() => categories.id, {
 				onDelete: "restrict", // o "cascade" según tu caso
@@ -36,7 +36,7 @@ export type ItemWithCategoryType = {
 	name: string
 	userId: string
 	category: {
-		id: number
+		id: string
 		name: string
 	}
 }

@@ -35,7 +35,7 @@ export default function CreateForm({
 		defaultValues: {
 			name: "",
 			phone: 0,
-			categoryId: 0,
+			categoryId: "",
 			date: 0,
 		},
 		validators: {
@@ -157,7 +157,7 @@ export default function CreateForm({
 													: undefined
 											}
 											onValueChange={value => {
-												field.handleChange(Number(value))
+												field.handleChange(value)
 											}}
 										>
 											<SelectTrigger className="w-full">
