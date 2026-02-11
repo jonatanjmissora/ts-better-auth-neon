@@ -49,3 +49,4 @@ promiseAll
 
 hace un errorComponent para el root, con su correspondiente mensaje de error
 
+cuando creo un item, o categoria, no me lo ordena, si lo ordena cuando hace un refresh, porque asi vienen de la base de datos, pero cuando modifico el cache y lo listo, me aparece primero

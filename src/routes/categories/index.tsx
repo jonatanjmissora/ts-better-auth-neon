@@ -1,3 +1,4 @@
+import DeleteForm from "@/components/categories/delete-form"
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -136,7 +137,7 @@ export function DeleteCategoryAlertDialog({
 			<AlertDialogContent>
 				<AlertDialogDescription></AlertDialogDescription>
 
-				{/* <DeleteForm category={category} setIsMenuOpen={setIsMenuOpen} /> */}
+				<DeleteForm category={category} setIsMenuOpen={setIsMenuOpen} />
 			</AlertDialogContent>
 		</AlertDialog>
 	)
