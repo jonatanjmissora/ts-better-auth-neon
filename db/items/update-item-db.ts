@@ -7,7 +7,6 @@ import { UpdateItemType } from "./items-validator"
 
 export async function updateItemDB(updatedItem: UpdateItemType) {
 	await delay()
-	console.log("updatedItem", updatedItem)
 	const result = await db
 		.update(items)
 		.set({

@@ -18,6 +18,7 @@ import { Route as ItemsIndexRouteImport } from './routes/items/index'
 import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
 import { Route as ItemsEditRouteImport } from './routes/items/edit'
 import { Route as ItemsCreateRouteImport } from './routes/items/create'
+import { Route as CategoriesEditRouteImport } from './routes/categories/edit'
 import { Route as CategoriesCreateRouteImport } from './routes/categories/create'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -66,6 +67,11 @@ const ItemsCreateRoute = ItemsCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => ItemsRouteRoute,
 } as any)
+const CategoriesEditRoute = CategoriesEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => CategoriesRouteRoute,
+} as any)
 const CategoriesCreateRoute = CategoriesCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/categories/create': typeof CategoriesCreateRoute
+  '/categories/edit': typeof CategoriesEditRoute
   '/items/create': typeof ItemsCreateRoute
   '/items/edit': typeof ItemsEditRoute
   '/categories/': typeof CategoriesIndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/categories/create': typeof CategoriesCreateRoute
+  '/categories/edit': typeof CategoriesEditRoute
   '/items/create': typeof ItemsCreateRoute
   '/items/edit': typeof ItemsEditRoute
   '/categories': typeof CategoriesIndexRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
   '/categories/create': typeof CategoriesCreateRoute
+  '/categories/edit': typeof CategoriesEditRoute
   '/items/create': typeof ItemsCreateRoute
   '/items/edit': typeof ItemsEditRoute
   '/categories/': typeof CategoriesIndexRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/categories/create'
+    | '/categories/edit'
     | '/items/create'
     | '/items/edit'
     | '/categories/'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/categories/create'
+    | '/categories/edit'
     | '/items/create'
     | '/items/edit'
     | '/categories'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/categories/create'
+    | '/categories/edit'
     | '/items/create'
     | '/items/edit'
     | '/categories/'
@@ -229,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ItemsCreateRouteImport
       parentRoute: typeof ItemsRouteRoute
     }
+    '/categories/edit': {
+      id: '/categories/edit'
+      path: '/edit'
+      fullPath: '/categories/edit'
+      preLoaderRoute: typeof CategoriesEditRouteImport
+      parentRoute: typeof CategoriesRouteRoute
+    }
     '/categories/create': {
       id: '/categories/create'
       path: '/create'
@@ -248,11 +267,13 @@ declare module '@tanstack/react-router' {
 
 interface CategoriesRouteRouteChildren {
   CategoriesCreateRoute: typeof CategoriesCreateRoute
+  CategoriesEditRoute: typeof CategoriesEditRoute
   CategoriesIndexRoute: typeof CategoriesIndexRoute
 }
 
 const CategoriesRouteRouteChildren: CategoriesRouteRouteChildren = {
   CategoriesCreateRoute: CategoriesCreateRoute,
+  CategoriesEditRoute: CategoriesEditRoute,
   CategoriesIndexRoute: CategoriesIndexRoute,
 }
 

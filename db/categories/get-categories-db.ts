@@ -6,12 +6,7 @@ import { delay } from "lib/utils"
 export async function getCategoriesDB(userId: string) {
 	await delay()
 	return db
-		.select({
-			id: categories.id,
-			name: categories.name,
-			price: categories.price,
-			userId: categories.userId,
-		})
+		.select()
 		.from(categories)
 		.orderBy(categories.name)
 		.where(eq(categories.userId, userId))

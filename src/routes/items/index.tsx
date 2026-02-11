@@ -16,6 +16,7 @@ import {
 	AlertDialog,
 	AlertDialogContent,
 	AlertDialogDescription,
+	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ItemWithCategoryType } from "db/items/schema"
@@ -134,6 +135,7 @@ export function DeleteItemAlertDialog({
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
+				<AlertDialogTitle></AlertDialogTitle>
 				<AlertDialogDescription></AlertDialogDescription>
 
 				<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />

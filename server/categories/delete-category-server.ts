@@ -8,8 +8,8 @@ export const deleteCategoryServer = createServerFn({ method: "POST" })
 	.inputValidator(categoryIdValidator)
 	.handler(async ({ data }) => {
 		const request = getRequest()
-		await protectedServerFn(request)
+		const session = await protectedServerFn(request)
 
-		const result = await deleteCategoryDB(data.id)
+		const result = await deleteCategoryDB(data.id, session.user.id)
 		return result[0]
 	})

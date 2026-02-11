@@ -8,8 +8,8 @@ export const deleteItemServer = createServerFn({ method: "POST" })
 	.inputValidator(itemIdValidator)
 	.handler(async ({ data }) => {
 		const request = getRequest()
-		await protectedServerFn(request)
+		const session = await protectedServerFn(request)
 
-		const result = await deleteItemDB(data.id)
+		const result = await deleteItemDB(data.id, session.user.id)
 		return result[0]
 	})

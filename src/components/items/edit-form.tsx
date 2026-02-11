@@ -42,7 +42,7 @@ export default function EditForm({
 		defaultValues: {
 			name: item?.name ?? "",
 			phone: item?.phone ?? 0,
-			categoryId: item?.category.id ?? 0,
+			categoryId: item?.category.id ?? "1",
 			date: item?.date ?? 0,
 		},
 		validators: {
@@ -61,17 +61,16 @@ export default function EditForm({
 					id: item.id,
 					userId: item.userId,
 				}
-				console.log("updated", updatedItem)
 				const result = await updateItemMutation({ data: updatedItem, category })
 
 				if (!result) {
-					toast.error("Error al crear el item")
+					toast.error("Error al editar el item")
 					return
 				}
-				toast.success("Item creado exitosamente")
+				toast.success("Item editado exitosamente")
 				router.navigate({ to: "/items" })
 			} catch (error) {
-				console.error("Error al crear el item", error)
+				console.error("Error al editar el item", error)
 			}
 		},
 	})
@@ -198,7 +197,7 @@ export default function EditForm({
 													: undefined
 											}
 											onValueChange={value => {
-												field.handleChange(Number(value))
+												field.handleChange(value)
 											}}
 										>
 											<SelectTrigger className="w-full">

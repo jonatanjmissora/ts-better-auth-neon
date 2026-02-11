@@ -3,6 +3,7 @@ import {
 	AlertDialog,
 	AlertDialogContent,
 	AlertDialogDescription,
+	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
@@ -102,7 +103,7 @@ const DropdownMenuComponent = ({ category }: { category: CategoryType }) => {
 				align="end"
 			>
 				<DropdownMenuGroup>
-					<Link to={`/category/edit`} search={{ id: category.id }}>
+					<Link to={`/categories/edit`} search={{ id: category.id }}>
 						<Button variant="ghost">
 							<Pencil size={14} />
 							Editar
@@ -135,8 +136,8 @@ export function DeleteCategoryAlertDialog({
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
+				<AlertDialogTitle></AlertDialogTitle>
 				<AlertDialogDescription></AlertDialogDescription>
-
 				<DeleteForm category={category} setIsMenuOpen={setIsMenuOpen} />
 			</AlertDialogContent>
 		</AlertDialog>

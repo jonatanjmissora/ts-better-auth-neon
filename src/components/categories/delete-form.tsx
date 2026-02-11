@@ -31,13 +31,13 @@ export default function DeleteForm({
 				const result = await deleteCategoryMutation({ data: { id: value.id } })
 
 				if (!result) {
-					toast.error("Error al eliminar el item")
+					toast.error("Error al eliminar la categoria")
 					return
 				}
-				toast.success("Item eliminado exitosamente")
+				toast.success("Categoria eliminada exitosamente")
 				router.invalidate()
 			} catch (error) {
-				console.error("Error al eliminar el item", error)
+				console.error("Error al eliminar la categoria", error)
 			}
 		},
 	})
