@@ -24,6 +24,10 @@ export function useUpdateItem() {
 					oldItem.id === variables.data.id ? data : oldItem
 				)
 			})
+			queryClient.setQueryData<ItemWithCategoryType>(
+				["item", variables.data.id],
+				data
+			)
 		},
 	})
 }

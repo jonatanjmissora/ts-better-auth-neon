@@ -38,17 +38,33 @@ export default function Header() {
 				{session ? (
 					<>
 						<div className="flex items-center gap-4">
-							<Link to="/" activeProps={{ className: "text-primary" }}>
+							<Link
+								to="/"
+								activeProps={{ className: "text-primary" }}
+								activeOptions={{ exact: true }}
+							>
 								<Button variant="ghost">Home</Button>
 							</Link>
-							<Link to="/items" activeProps={{ className: "text-primary" }}>
+							<Link
+								to="/items"
+								activeProps={{ className: "text-primary" }}
+								activeOptions={{ exact: true }}
+							>
 								<Button variant="ghost">List Items</Button>
 							</Link>
 							<Link
 								to="/items/create"
 								activeProps={{ className: "text-primary" }}
+								activeOptions={{ exact: true }}
 							>
 								<Button variant="ghost">Create Item</Button>
+							</Link>
+							<Link
+								to="/items/edit"
+								activeProps={{ className: "text-primary" }}
+								search={{ id: "1" }}
+							>
+								<Button variant="ghost">Edit Item</Button>
 							</Link>
 						</div>
 						<DropdownMenuDemo

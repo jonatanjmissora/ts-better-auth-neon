@@ -46,7 +46,7 @@ function ItemsList() {
 					className="flex flex-col gap-0 w-full p-4 relative text-xs 2xl:text-base"
 					key={item.id}
 				>
-					<div className="absolute top-2 right-2">
+					<div className="absolute top-1/2 -translate-y-1/2 right-2">
 						<DropdownMenuComponent item={item} />
 					</div>
 					<CardTitle>ID: {item.id}</CardTitle>

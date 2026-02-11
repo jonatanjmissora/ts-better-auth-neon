@@ -1,15 +1,15 @@
 tanstack react form
 items/create-form ✔
-items/edit-form ❌
+items/edit-form ✔
 
 DB ACTIONS								SERVERFN									HOOKs
 ----------------------------------------------------------------------------------------------------------------
 itmes/get-items-db ✔				     items/get-items-server ✔						items/use-get-items ✔
 items/insert-item-db ✔				     items/create-items-server ✔				     items/useCreateItem ✔
-items/update-item-db ❌				 items/update-items-server ❌      			   items/useUpdateItem ❌
+items/update-item-db ✔				 items/update-items-server ✔      			   items/useUpdateItem ✔
 items/delete-item-db ✔				    items/delete-items-server ✔				     items/useDeleteItem ✔
 categories/get-categories-db ✔		categories/get-categories-server ✔			categories/get-categories-query ✔
-categories/insert-category-db ❌	    categories/create-categories-server ❌ 	categories/useCreateCategories ✔
+categories/insert-category-db ❌	    categories/create-categories-server ❌ 	categories/useCreateCategories ❌
 categories/update-category-db ❌	  categories/update-categories-server ❌	   categories/useUpdateCategories ❌
 categories/delete-category-db ❌	   categories/delete-categories-server ❌		categories/useDeleteCategories ❌
 
@@ -44,10 +44,8 @@ FALTA
 
 agregar el price a la tabla de categories
 
-ver cuando recargo en ruta en /edit, tengo que traer 2 quries, el de item y el de category, hay que ver si se puede un
+ver cuando recargo en ruta en /edit, tengo que traer 2 queries, el de item y el de category, hay que ver si se puede un
 promiseAll
 
 hace un errorComponent para el root, con su correspondiente mensaje de error
-
-controlar que no se actualiza el cache de items, cuando hago el update. Lo veo en /items list, pero no en /editar
 
