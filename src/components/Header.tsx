@@ -66,6 +66,28 @@ export default function Header() {
 							>
 								<Button variant="ghost">Edit Item</Button>
 							</Link>
+
+							<Link
+								to="/categories"
+								activeProps={{ className: "text-primary" }}
+								activeOptions={{ exact: true }}
+							>
+								<Button variant="ghost">List Categories</Button>
+							</Link>
+							<Link
+								to="/categories/create"
+								activeProps={{ className: "text-primary" }}
+								activeOptions={{ exact: true }}
+							>
+								<Button variant="ghost">Create Categories</Button>
+							</Link>
+							<Link
+								to="/categories/edit"
+								activeProps={{ className: "text-primary" }}
+								search={{ id: "1" }}
+							>
+								<Button variant="ghost">Edit Categories</Button>
+							</Link>
 						</div>
 						<DropdownMenuDemo
 							name={session.user?.name}
