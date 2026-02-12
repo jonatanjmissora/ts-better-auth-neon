@@ -31,3 +31,11 @@ export function setItemWithCategoryId(item: ItemWithCategoryType) {
 		userId: item.userId,
 	}
 }
+
+export function sortByName<T extends { name: string }>(categories: T[]) {
+	return [...categories].sort((a, b) => a.name.localeCompare(b.name))
+}
+
+export function sortByDate<T extends { date: number }>(items: T[]) {
+	return [...items].sort((a, b) => a.date - b.date)
+}

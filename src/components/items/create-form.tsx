@@ -42,22 +42,18 @@ export default function CreateForm({
 			onSubmit: itemFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				const category = categories?.find(
-					category => category.id === value.categoryId
-				)
-				if (!category) return
-				const result = await createItemMutation({ data: value, category })
+			const category = categories?.find(
+				category => category.id === value.categoryId
+			)
+			if (!category) return
+			const result = await createItemMutation({ data: value, category })
 
-				if (!result) {
-					toast.error("Error al crear el item")
-					return
-				}
-				toast.success("Item creado exitosamente")
-				router.navigate({ to: "/items" })
-			} catch (error) {
+			if (!result) {
 				console.error("Error al crear el item", error)
+				toast.error("Error al crear el item")
 			}
+			toast.success("Item creado exitosamente")
+			router.navigate({ to: "/items" })
 		},
 	})
 

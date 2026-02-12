@@ -39,27 +39,23 @@ export default function EditForm({
 			onSubmit: categoryFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				if (!category) {
-					return
-				}
-				const updatedCategory = {
-					...value,
-					id: category.id,
-					userId: category.userId,
-				}
-				console.log("updated", updatedCategory)
-				const result = await updateCategoryMutation({ data: updatedCategory })
-				console.log("RESULT", result)
-				if (!result) {
-					toast.error("Error al editar categoria")
-					return
-				}
-				toast.success("Categoria editada exitosamente")
-				router.navigate({ to: "/categories" })
-			} catch (error) {
-				console.error("Error al editar la categoria", error)
+			if (!category) {
+				return
 			}
+			const updatedCategory = {
+				...value,
+				id: category.id,
+				userId: category.userId,
+			}
+			console.log("updated", updatedCategory)
+			const result = await updateCategoryMutation({ data: updatedCategory })
+			console.log("RESULT", result)
+			if (!result) {
+				console.error("Error al editar la categoria", error)
+				toast.error("Error al editar la categoria")
+			}
+			toast.success("Categoria editada exitosamente")
+			router.navigate({ to: "/categories" })
 		},
 	})
 

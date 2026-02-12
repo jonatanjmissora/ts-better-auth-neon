@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { CategoryType } from "db/categories/schema"
+import { sortByName } from "lib/utils"
 import { updateCategoryServer } from "server/categories/update-category-server"
 
 type UpdateCategoryVariables = {
@@ -21,8 +22,10 @@ export function useUpdateCategory() {
 						element => element.id === variables.data.id
 					)
 					if (!oldCategory) return oldCategories
-					return oldCategories.map(element =>
-						element.id === variables.data.id ? data : element
+					return sortByName(
+						oldCategories.map(element =>
+							element.id === variables.data.id ? data : element
+						)
 					)
 				}
 			)

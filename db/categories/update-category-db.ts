@@ -5,25 +5,27 @@ import { and, eq } from "drizzle-orm"
 import { UpdateCategoryType } from "./categories-validator"
 
 export async function updateCategoryDB(updatedCategory: UpdateCategoryType) {
-	await delay()
-	const result = await db
-		.update(categories)
-		.set({
-			name: updatedCategory.name,
-			price: updatedCategory.price,
-		})
-		.where(
-			and(
-				eq(categories.id, updatedCategory.id),
-				eq(categories.userId, updatedCategory.userId)
+	try {
+		await delay()
+		const result = await db
+			.update(categories)
+			.set({
+				name: updatedCategory.name,
+				price: updatedCategory.price,
+			})
+			.where(
+				and(
+					eq(categories.id, updatedCategory.id),
+					eq(categories.userId, updatedCategory.userId)
+				)
 			)
-		)
-		.returning({
-			id: categories.id,
-			name: categories.name,
-			price: categories.price,
-			userId: categories.userId,
-		})
+			.returning()
 
-	return result[0]
+		return result[0]
+	} catch (error) {
+		console.error(
+			"ERROR actualizando categoria:",
+			error instanceof Error ? error.message : error
+		)
+	}
 }

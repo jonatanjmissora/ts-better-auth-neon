@@ -48,8 +48,3 @@ ver cuando recargo en ruta en /edit, tengo que traer 2 queries, el de item y el 
 promiseAll
 
 hace un errorComponent para el root, con su correspondiente mensaje de error
-
-cuando creo un item, o categoria, no me lo ordena, si lo ordena cuando hace un refresh, porque asi vienen de la base de datos, pero cuando modifico el cache y lo listo, me aparece primero
-
-cuando edito una categoria, com se muestra si los items tenian dicha categoria
-el update de item, en la parte de categoria, se muestra

@@ -14,9 +14,11 @@ export default function DeleteForm({
 	category: CategoryType
 	setIsMenuOpen: (open: boolean) => void
 }) {
-	const { mutateAsync: deleteCategoryMutation, isPending } = useDeleteCategory(
-		category.id
-	)
+	const {
+		mutateAsync: deleteCategoryMutation,
+		error,
+		isPending,
+	} = useDeleteCategory(category.id)
 	const router = useRouter()
 
 	const form = useForm({
@@ -27,18 +29,14 @@ export default function DeleteForm({
 			onSubmit: categoryIdValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				const result = await deleteCategoryMutation({ data: { id: value.id } })
+			const result = await deleteCategoryMutation({ data: { id: value.id } })
 
-				if (!result) {
-					toast.error("Error al eliminar la categoria")
-					return
-				}
-				toast.success("Categoria eliminada exitosamente")
-				router.invalidate()
-			} catch (error) {
+			if (!result) {
 				console.error("Error al eliminar la categoria", error)
+				toast.error("Error al eliminar la categoria")
 			}
+			toast.success("Categoria eliminada exitosamente")
+			router.invalidate()
 		},
 	})
 
@@ -78,6 +76,12 @@ export default function DeleteForm({
 					)}
 				</Button>
 			</div>
+			{error && (
+				<p className="text-red-500 text-xs">
+					Error al eliminar la categoria, posible que la categoria este asociada
+					a un item
+				</p>
+			)}
 		</form>
 	)
 }

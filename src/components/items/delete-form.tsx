@@ -14,7 +14,11 @@ export default function DeleteForm({
 	item: ItemWithCategoryType
 	setIsMenuOpen: (open: boolean) => void
 }) {
-	const { mutateAsync: deleteItemMutation, isPending } = useDeleteItem(item.id)
+	const {
+		mutateAsync: deleteItemMutation,
+		error,
+		isPending,
+	} = useDeleteItem(item.id)
 	const router = useRouter()
 
 	const form = useForm({
@@ -25,18 +29,14 @@ export default function DeleteForm({
 			onSubmit: itemIdValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				const result = await deleteItemMutation({ data: { id: value.id } })
+			const result = await deleteItemMutation({ data: { id: value.id } })
 
-				if (!result) {
-					toast.error("Error al eliminar el item")
-					return
-				}
-				toast.success("Item eliminado exitosamente")
-				router.invalidate()
-			} catch (error) {
+			if (!result) {
 				console.error("Error al eliminar el item", error)
+				toast.error("Error al eliminar el item")
 			}
+			toast.success("Item eliminado exitosamente")
+			router.invalidate()
 		},
 	})
 
@@ -76,6 +76,9 @@ export default function DeleteForm({
 					)}
 				</Button>
 			</div>
+			{error && (
+				<p className="text-red-500 text-xs">Error al eliminar el item</p>
+			)}
 		</form>
 	)
 }

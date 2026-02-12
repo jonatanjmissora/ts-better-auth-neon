@@ -32,17 +32,13 @@ export default function CreateForm({
 			onSubmit: categoryFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				const result = await createCategoryMutation({ data: value })
-				if (!result) {
-					toast.error("Error al crear categoria")
-					return
-				}
-				toast.success("Categoria creado exitosamente")
-				router.navigate({ to: "/categories" })
-			} catch (error) {
-				console.error("Error al crear la categoría", error)
+			const result = await createCategoryMutation({ data: value })
+			if (!result) {
+				console.error("Error al crear la categoria", error)
+				toast.error("Error al crear la categoria")
 			}
+			toast.success("Categoria creado exitosamente")
+			router.navigate({ to: "/categories" })
 		},
 	})
 

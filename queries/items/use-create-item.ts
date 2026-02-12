@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ItemFormType } from "db/items/items-validator"
 import { CategoryType } from "db/categories/schema"
 import { ItemType, ItemWithCategoryType } from "db/items/schema"
-import { setItemForQuery } from "lib/utils"
+import { setItemForQuery, sortByDate } from "lib/utils"
 
 type CreateItemVariables = {
 	data: ItemFormType
@@ -20,7 +20,7 @@ export function useCreateItem() {
 			queryClient.setQueryData<ItemWithCategoryType[]>(["items"], oldItems => {
 				if (!oldItems) return oldItems
 				const newItem = setItemForQuery(data, variables.category)
-				const newItems = [newItem, ...oldItems]
+				const newItems = sortByDate([newItem, ...oldItems])
 				return newItems
 			})
 		},

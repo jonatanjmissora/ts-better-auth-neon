@@ -1,38 +1,38 @@
 import { delay } from "lib/utils"
 import { db } from "db/drizzle"
 import { items } from "./schema"
-import { categories } from "db/categories/schema"
 import { and, eq } from "drizzle-orm"
 import { UpdateItemType } from "./items-validator"
 
 export async function updateItemDB(updatedItem: UpdateItemType) {
-	await delay()
-	const result = await db
-		.update(items)
-		.set({
-			name: updatedItem.name,
-			phone: updatedItem.phone,
-			date: updatedItem.date,
-			categoryId: updatedItem.categoryId,
-		})
-		.from(categories)
-		.where(
-			and(
-				eq(items.id, updatedItem.id),
-				eq(items.userId, updatedItem.userId),
-				eq(items.categoryId, categories.id)
+	try {
+		await delay()
+		const result = await db
+			.update(items)
+			.set({
+				name: updatedItem.name,
+				phone: updatedItem.phone,
+				date: updatedItem.date,
+				categoryId: updatedItem.categoryId,
+			})
+			.where(
+				and(eq(items.id, updatedItem.id), eq(items.userId, updatedItem.userId))
 			)
+			.returning({
+				id: items.id,
+				name: items.name,
+				phone: items.phone,
+				date: items.date,
+				userId: items.userId,
+				categoryId: items.categoryId,
+			})
+		return result[0]
+	} catch (error) {
+		console.error(
+			"ERROR actualizando item:",
+			error instanceof Error ? error.message : error
 		)
-		.returning({
-			id: items.id,
-			name: items.name,
-			phone: items.phone,
-			date: items.date,
-			userId: items.userId,
-			category: {
-				id: categories.id,
-				name: categories.name,
-			},
-		})
-	return result[0]
+	}
 }
+
+// aca no puedo retornar category {id:..., name:...} porque el result, solo devuelve columnas de la fila que se esta actualizando. Si quiero obtener category, la funcion que llama a updateItemDB, debe hacer un query adicional

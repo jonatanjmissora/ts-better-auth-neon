@@ -49,29 +49,25 @@ export default function EditForm({
 			onSubmit: itemFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			try {
-				const category = categories?.find(
-					category => category.id === value.categoryId
-				)
-				if (!category || !item) {
-					return
-				}
-				const updatedItem = {
-					...value,
-					id: item.id,
-					userId: item.userId,
-				}
-				const result = await updateItemMutation({ data: updatedItem, category })
-
-				if (!result) {
-					toast.error("Error al editar el item")
-					return
-				}
-				toast.success("Item editado exitosamente")
-				router.navigate({ to: "/items" })
-			} catch (error) {
-				console.error("Error al editar el item", error)
+			const category = categories?.find(
+				category => category.id === value.categoryId
+			)
+			if (!category || !item) {
+				return
 			}
+			const updatedItem = {
+				...value,
+				id: item.id,
+				userId: item.userId,
+			}
+			const result = await updateItemMutation({ data: updatedItem, category })
+
+			if (!result) {
+				console.error("Error al editar el item", error)
+				toast.error("Error al editar el item")
+			}
+			toast.success("Item editado exitosamente")
+			router.navigate({ to: "/items" })
 		},
 	})
 
