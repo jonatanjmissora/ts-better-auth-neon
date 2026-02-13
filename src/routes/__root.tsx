@@ -12,6 +12,8 @@ import { Session } from "better-auth"
 import { getSession } from "server/getSession"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getQueryClient } from "queries/querie-client"
+import { NotFound } from "@/components/NotFound"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 
 export type RouterContext = {
 	session: Session | null
@@ -44,7 +46,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 		return { session }
 	},
 	shellComponent: RootDocument,
-	notFoundComponent: () => <p>Not Found</p>,
+	errorComponent: DefaultCatchBoundary,
+	notFoundComponent: () => <NotFound />,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {

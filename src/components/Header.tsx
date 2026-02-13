@@ -1,5 +1,5 @@
 import { authClient } from "lib/auth/auth-client"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useLoaderData, useNavigate } from "@tanstack/react-router"
 import { Moon, Sun } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -11,11 +11,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Route } from "@/routes/__root"
 
-export default function Header() {
+export default async function Header() {
 	const [theme, setTheme] = useState<"light" | "dark">("light")
-	const { session } = Route.useLoaderData()
+	const { session } = useLoaderData({ from: "__root__" })
 
 	const toggleTheme = () => {
 		if (typeof window !== "undefined") {
@@ -52,20 +51,6 @@ export default function Header() {
 							>
 								<Button variant="ghost">List Items</Button>
 							</Link>
-							<Link
-								to="/items/create"
-								activeProps={{ className: "text-primary" }}
-								activeOptions={{ exact: true }}
-							>
-								<Button variant="ghost">Create Item</Button>
-							</Link>
-							<Link
-								to="/items/edit"
-								activeProps={{ className: "text-primary" }}
-								search={{ id: "1" }}
-							>
-								<Button variant="ghost">Edit Item</Button>
-							</Link>
 
 							<Link
 								to="/categories"
@@ -73,20 +58,6 @@ export default function Header() {
 								activeOptions={{ exact: true }}
 							>
 								<Button variant="ghost">List Categories</Button>
-							</Link>
-							<Link
-								to="/categories/create"
-								activeProps={{ className: "text-primary" }}
-								activeOptions={{ exact: true }}
-							>
-								<Button variant="ghost">Create Categories</Button>
-							</Link>
-							<Link
-								to="/categories/edit"
-								activeProps={{ className: "text-primary" }}
-								search={{ id: "1" }}
-							>
-								<Button variant="ghost">Edit Categories</Button>
 							</Link>
 						</div>
 						<DropdownMenuDemo

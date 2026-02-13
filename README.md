@@ -1,91 +1,123 @@
-1️⃣
+TEMARIO :
+=========
+
+stack: 
+tanstack start  (tanstack router + tanstack query + tanstack form)
+shadcn
+better-auth
+drizzle + neon
+
+Pasos en la arquitectura:
+0 - instalamos tanstack start
+1 - better-auth 
+  1.1 - instalacion de librerias
+  1.2 - variables de entorno relacionadas a better-auth y neon
+  1.3 - auth.ts  donde configuramos el better auth
+  1.4 - db/drizzle.ts   conexion a neon con su DATABASE_URL
+  1.5 - db/schema.ts  vacio por el momento
+  1.6 - drizzle.config.ts
+  1.7 - generamos el schema de better-auth
+  1.8 - hacemos el push a neon con      npx drizzle-kit push
+
+  aqui ya tenemos la base de datos en neon y la tabla de better-auth
+  conectemos las comunicaciones entre el frontend y neon, hagamos los login, logout)
+
+
+</>
             
     pnpm create @tanstack/start@latest  (nitro y shadcn)
 
-2️⃣ limpiamos codigo que no sirve
+(limpiamos codigo que no sirve)
 
-3️⃣
-  
+
+1️⃣BETTER-AUTH + NEON
+================
+
+1️⃣ instalacion
+------------------
+
     pnpm add better-auth drizzle-orm @neondatabase/serverless dotenv zod @tanstack/react-form lucide-react
     pnpm add -D drizzle-kit tsx
 
-4️⃣ .env con 
+1️⃣.2️⃣ .env con 
+------------------
 
     BETTER_AUTH_SECRET
     DATABASE_URL
-de https://www.better-auth.com/docs/installation
+    GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET
 
-5️⃣ lib/auth/auth.ts
+(de https://www.better-auth.com/docs/installation)
+
+1️⃣.3️⃣ lib/auth/auth.ts
+--------------------------
   
-    import { betterAuth } from "better-auth";
-    import { drizzleAdapter } from "better-auth/adapters/drizzle";
-    import { db } from "../db/drizzle";
-    import { tanstackStartCookies } from "better-auth/tanstack-start";
-  
+    import { betterAuth } from "better-auth"
+    import { drizzleAdapter } from "better-auth/adapters/drizzle"
+    import { tanstackStartCookies } from "better-auth/tanstack-start"
+    import { db } from "../../db/drizzle"
+
     export const auth = betterAuth({
-        database: drizzleAdapter(db, {
-            provider: "pg", 
-        }),
-        socialProviders: {
-            google: { 
-                clientId: process.env.GOOGLE_CLIENT_ID as string, 
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
-            }, 
+      database: drizzleAdapter(db, {
+        provider: "pg",
+      }),
+      socialProviders: {
+        google: {
+          clientId: process.env.GOOGLE_CLIENT_ID as string,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         },
-        emailAndPassword: { 
-        enabled: true, 
       },
-      plugins: [tanstackStartCookies()]
-    });
-
-6️⃣ traemos la 
-    
-    DATABASE_URL
-  de neon y la colocamos en .env
-
-7️⃣ db/drizzle.ts
-
-    import { drizzle } from "drizzle-orm/neon-http"
-    import * as schema from "./schema"
-  
-    export const db = drizzle(process.env.DATABASE_URL as string, {
-      schema,
+      emailAndPassword: {
+        enabled: true,
+      },
+      plugins: [tanstackStartCookies()],
     })
 
-8️⃣ db/schema.ts  (vacio por ahora)
+1️⃣.4️⃣ db/drizzle.ts
+----------------------
 
-9️⃣ drizzle.config.ts
+   import { drizzle } from "drizzle-orm/neon-http"
+   import * as schema from "./schema"
 
-    import 'dotenv/config';
-    import { defineConfig } from 'drizzle-kit';
-  
+   export const db = drizzle(process.env.DATABASE_URL as string, {
+     schema,
+   })
+
+
+1️⃣5️⃣ db/schema.ts  (vacio por ahora)
+
+1️⃣6️⃣ drizzle.config.ts
+
+    import "dotenv/config"
+    import { defineConfig } from "drizzle-kit"
+
     export default defineConfig({
-      out: './drizzle',
-      schema: './db/schema.ts',
-      dialect: 'postgresql',
+      out: "./drizzle",
+      schema: "./db/schema.ts",
+      dialect: "postgresql",
       dbCredentials: {
-        url: process.env.DATABASE_URL!,
+        url: process.env.DATABASE_URL as string,
       },
-    });
+    })
 
-🔟 
+1️⃣7️⃣ generar el shema de better-auth
+--------------------------------------------
   
     pnpm dlx @better-auth/cli@latest generate
 
-1️⃣1️⃣ pasar el archivo que se genero, auth-schema.ts, a db/schema.ts
+1️⃣8️⃣ pasar el archivo que se genero, auth-schema.ts, a db/schema.ts
 
-1️⃣2️⃣
+1️⃣9️⃣ generar la base de datos en neon
   
-    pnpm dlx drizzle-kit push
-  o
-    
     npx drizzle-kit push
 
-hasta este punto, tienen que estar creadas las conexiones de drizzle y neon. Tienen que estar
-creadas las tablas de better-auth en neon.
+( hasta este punto, tienen que estar creadas las conexiones de drizzle y neon. Tienen que estar
+creadas las tablas de better-auth en neon.)
 =============================================================
 
-1️⃣3️⃣ routes/api/auth/$.ts
+(Nos preparamos para poder usar lo que hemos creado, comunicacion con los request, signIn, middlewares, loginFrom, etc)
+
+2️⃣.0️⃣ routes/api/auth/$.ts
 
     import { createFileRoute } from "@tanstack/react-router";
     import { auth } from "lib/auth";
@@ -103,7 +135,7 @@ creadas las tablas de better-auth en neon.
       },
     });
 
-1️⃣4️⃣ db/auth-client.ts
+2️⃣.1️⃣ db/auth-client.ts
 
     import { createAuthClient } from "better-auth/react"
     export const authClient = createAuthClient({
@@ -111,14 +143,14 @@ creadas las tablas de better-auth en neon.
         baseURL: "http://localhost:3000"
     })
 
-1️⃣5️⃣ lib/middleware.ts
+2️⃣.2️⃣ lib/auth/route-middleware.ts
 
     import { redirect } from "@tanstack/react-router";
     import { createMiddleware } from "@tanstack/react-start";
     import { getRequestHeaders } from "@tanstack/react-start/server";
     import { auth } from "./auth/auth";
   
-    export const authMiddleware = createMiddleware().server(
+    export const authRouteMiddleware = createMiddleware().server(
         async ({ next }) => {
             const headers = getRequestHeaders();
             const session = await auth.api.getSession({ headers })
@@ -127,9 +159,46 @@ creadas las tablas de better-auth en neon.
                 throw redirect({ to: "/login" })
             }
   
-            return await next()
+            return next({
+              context: {
+                session,
+              },
+            })
         }
     );
+
+lib/auth/serverFn-middleware.ts
+
+    import { redirect } from "@tanstack/react-router";
+    import { createMiddleware } from "@tanstack/react-start";
+    import { getRequestHeaders } from "@tanstack/react-start/server";
+    import { auth } from "./auth/auth";
+  
+    export const authRouteMiddleware = createMiddleware().server(
+        async ({ next }) => {
+            const headers = getRequestHeaders();
+            const session = await auth.api.getSession({ headers })
+  
+            if (!session) {
+              throw new Response("Unauthorized", { status: 401 })
+            }
+  
+            return next({
+              context: {
+                session,
+              },
+            })
+        }
+    );
+
+2️⃣.3️⃣ Otra opcion, con middleware mas controlados y especificos
+--------------------------------------------------------------------------
+src/server/getSession.ts
+
+lib/auth/protected-route.ts
+
+lib/auth/protected-serverFn.ts
+
 
 empezamos con el UI, y los forms de shadcn
 =============================================================

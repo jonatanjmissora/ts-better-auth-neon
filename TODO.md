@@ -1,6 +1,8 @@
 tanstack react form
-items/create-form ✔
-items/edit-form ✔
+===============
+items/create-form ✔			categories/create-form ✔			
+items/delete-form ✔			categories/delete-form ✔			
+items/edit-form ✔				categories/edit-form ✔			
 
 DB ACTIONS								SERVERFN									HOOKs
 ----------------------------------------------------------------------------------------------------------------
@@ -9,9 +11,9 @@ items/insert-item-db ✔				     items/create-items-server ✔				     items/use
 items/update-item-db ✔				 items/update-items-server ✔      			   items/useUpdateItem ✔
 items/delete-item-db ✔				    items/delete-items-server ✔				     items/useDeleteItem ✔
 categories/get-categories-db ✔		categories/get-categories-server ✔			categories/get-categories-query ✔
-categories/insert-category-db ❌	    categories/create-categories-server ❌ 	categories/useCreateCategories ❌
-categories/update-category-db ❌	  categories/update-categories-server ❌	   categories/useUpdateCategories ❌
-categories/delete-category-db ❌	   categories/delete-categories-server ❌		categories/useDeleteCategories ❌
+categories/insert-category-db ✔	    categories/create-categories-server ✔ 	categories/useCreateCategories ✔
+categories/update-category-db ✔	  categories/update-categories-server ✔	   categories/useUpdateCategories ✔
+categories/delete-category-db ✔	   categories/delete-categories-server ✔		categories/useDeleteCategories ✔
 
 
 
@@ -42,9 +44,6 @@ FALTA
 
 ✔ si en el DialogAlert, no es mejor hacer un form, asi veo el spinner cuando esta eliminando
 
-agregar el price a la tabla de categories
+✔ hace un errorComponent para el root, con su correspondiente mensaje de error
 
-ver cuando recargo en ruta en /edit, tengo que traer 2 queries, el de item y el de category, hay que ver si se puede un
-promiseAll
-
-hace un errorComponent para el root, con su correspondiente mensaje de error
+ver si es mejor el middleware o el protectedRoute
