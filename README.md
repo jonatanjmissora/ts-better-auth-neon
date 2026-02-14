@@ -10,6 +10,7 @@ drizzle + neon
 Pasos en la arquitectura:
 0 - instalamos tanstack start
 1 - better-auth 
+------------------
   1.1 - instalacion de librerias
   1.2 - variables de entorno relacionadas a better-auth y neon
   1.3 - auth.ts  donde configuramos el better auth
@@ -17,10 +18,48 @@ Pasos en la arquitectura:
   1.5 - db/schema.ts  vacio por el momento
   1.6 - drizzle.config.ts
   1.7 - generamos el schema de better-auth
-  1.8 - hacemos el push a neon con      npx drizzle-kit push
+  1.9 - hacemos el push a neon con      npx drizzle-kit push
 
   aqui ya tenemos la base de datos en neon y la tabla de better-auth
-  conectemos las comunicaciones entre el frontend y neon, hagamos los login, logout)
+  conectemos las comunicaciones entre el frontend y neon, hagamos los login, logout
+
+  1.10 - routes/api/auth/$.ts  conectamos con la api de better auth
+  1.11 - lib/auth/auth-client.ts   de donde se obtienen el signIn, signOut, signUp
+  1.12 - lib/auth/route-middleware.ts    middleware para las rutas
+          lib/auth/serverFn-middleware.ts middleware para las server functions
+
+  1.13 - src/server/getSession.ts        es una forma mas controlada, de separar responsabilidades
+          lib/auth/protected-route.ts
+          lib/auth/protected-serverFn.ts
+
+  1.14 - instalamos el login 03 block de shadcn.
+  1.15 - colocamos el Toast en el __root.tsx
+
+  1.16 - hacemos el login-form
+  1.17 - hacemos el register-form
+
+  1.18 - Header.tsx    utilizamos session y toggleTheme
+  aqui en __root.tsx guardamos la session en el context
+
+  hasta aqui tendriamos el header con su session y theme
+  el login / register para ingresar con un usuario utilizando better-auth y almacenandolo en neon mediante drizzle
+  utilizamos middlewares para proteger tanto el acceso a las rutas como a las server functions 
+
+  2 - Tanstack Query + Streamming
+----------------------------------------
+  2.0 - instalacion de libreria
+  2.1 - queries/query-client.ts     es un proveedor de entorno (En el primer HTTP request, inicia el queryClient para el context(para que los loaders), y en el Provider(para que lo utilicen hooks y componentes) )
+  2.2 - router.tsx    agregamos el queryClient al context para consumirse en los loaders, o server functions
+  2.3 - __root.tsx    agregamos el queryClient al provider para poder consumirse en los componentes mediante useQueryClient()
+  2.4 - queries/categories/categories-query.ts y queries/items/items-query.ts 
+
+  2.5 - creamos desde atras hacia adelante     
+          db/items/get-items-db.ts    con drizzle + neon
+          server/items/get-items-server   controlamos si hay session con protectedServerFn
+          queries/items/use-items-query.ts    el hook que se encarga de obtener los items
+          routes/items/route.tsx   loader con el ensureQueryData para el stream
+          routes/items/index.tsx   consumimos con Suspense + useSuspenseQuery
+     
 
 
 </>
@@ -48,6 +87,10 @@ Pasos en la arquitectura:
     GOOGLE_CLIENT_SECRET
 
 (de https://www.better-auth.com/docs/installation)
+
+Google client
+dentro de https://console.cloud.google.com/apis/dashboard?project=ts-better-auth-neon
+viendo el video https://www.youtube.com/watch?v=xqd51D3O53k&list=LL&index=8        minuto 35
 
 1️⃣.3️⃣ lib/auth/auth.ts
 --------------------------
@@ -114,10 +157,10 @@ Pasos en la arquitectura:
 ( hasta este punto, tienen que estar creadas las conexiones de drizzle y neon. Tienen que estar
 creadas las tablas de better-auth en neon.)
 =============================================================
-
 (Nos preparamos para poder usar lo que hemos creado, comunicacion con los request, signIn, middlewares, loginFrom, etc)
 
-2️⃣.0️⃣ routes/api/auth/$.ts
+
+1️⃣.1️⃣0️⃣ routes/api/auth/$.ts
 
     import { createFileRoute } from "@tanstack/react-router";
     import { auth } from "lib/auth";
@@ -135,7 +178,7 @@ creadas las tablas de better-auth en neon.)
       },
     });
 
-2️⃣.1️⃣ db/auth-client.ts
+1️⃣.1️⃣2️⃣ db/auth-client.ts
 
     import { createAuthClient } from "better-auth/react"
     export const authClient = createAuthClient({
@@ -143,7 +186,7 @@ creadas las tablas de better-auth en neon.)
         baseURL: "http://localhost:3000"
     })
 
-2️⃣.2️⃣ lib/auth/route-middleware.ts
+1️⃣.1️⃣3️⃣ lib/auth/route-middleware.ts
 
     import { redirect } from "@tanstack/react-router";
     import { createMiddleware } from "@tanstack/react-start";
@@ -154,11 +197,9 @@ creadas las tablas de better-auth en neon.)
         async ({ next }) => {
             const headers = getRequestHeaders();
             const session = await auth.api.getSession({ headers })
-  
             if (!session) {
                 throw redirect({ to: "/login" })
             }
-  
             return next({
               context: {
                 session,
@@ -166,6 +207,15 @@ creadas las tablas de better-auth en neon.)
             })
         }
     );
+
+    y asi la protegemos:
+
+    export const Route = createFileRoute("")({
+      component: RouteComponent,
+      server: {
+        middleware: [authMiddleware],
+      },
+    });
 
 lib/auth/serverFn-middleware.ts
 
@@ -178,11 +228,9 @@ lib/auth/serverFn-middleware.ts
         async ({ next }) => {
             const headers = getRequestHeaders();
             const session = await auth.api.getSession({ headers })
-  
             if (!session) {
               throw new Response("Unauthorized", { status: 401 })
             }
-  
             return next({
               context: {
                 session,
@@ -191,481 +239,205 @@ lib/auth/serverFn-middleware.ts
         }
     );
 
-2️⃣.3️⃣ Otra opcion, con middleware mas controlados y especificos
+    y asi la protegemos:
+    const function = createServerFn({ method: "GET" })
+      .middleware(authRouteMiddleware)
+      .handler()
+
+
+1️⃣.1️⃣3️⃣ Otra opcion, con middleware mas controlados y especificos
 --------------------------------------------------------------------------
 src/server/getSession.ts
+    export const getSession = createServerFn({ method: "GET" }).handler(
+      async () => {
+        const request = getRequest()
+        return await auth.api.getSession({
+          headers: request.headers,
+        })
+      }
+    )
+
+con esta funcion guardamos la session en el context, en __root.tsx, para que pueda ser accedida en cualquier componente React
 
 lib/auth/protected-route.ts
+    export async function protectedRoute() {
+      const session = await getSession()
+      if (!session) {
+        throw redirect({ to: "/login" })
+      }
+      return session
+    }
+
+asi protegemos la ruta:
+    loader: async () => {
+        await protectedRoute()
+        return {}
+      },
 
 lib/auth/protected-serverFn.ts
+    export async function protectedServerFn(request: Request) {
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      })
+      if (!session) {
+        throw new Response("Unauthorized", { status: 401 })
+      }
+      return session
+    }
+
+asi protegemos las funciones del servidor:
+    export const getCategoriesServer = createServerFn({ method: "GET" }).handler(
+      async () => {
+        const request = getRequest()
+        const session = await protectedServerFn(request)
+        return await getCategoriesDB(session.user.id)
+      }
+    )
 
 
-empezamos con el UI, y los forms de shadcn
-=============================================================
+(empezamos con el UI, y los forms de shadcn)
+==============================
 
-1️⃣6️⃣
+1️⃣.1️⃣4️⃣ instalamos la opcion de shadcn para formulario de login
   
     pnpm dlx shadcn@latest add login-03 field
 
-16 - agregamos el Toaster al __root.tsx  
+1️⃣.1️⃣5️⃣ agregamos el Toaster al __root.tsx  
 
-16 - routes/dashboard/route.tsx
+1️⃣.1️⃣6️⃣ login.tsx
 
-    import { createFileRoute, Outlet } from "@tanstack/react-router";
-    import { authMiddleware } from "lib/middleware";
-    import Header from "../../components/Header";
-  
-    export const Route = createFileRoute("/dashboard")({
-      component: RouteComponent,
-      server: {
-        middleware: [authMiddleware],
-      },
-    });
-  
-    function RouteComponent() {
-      return <section className='p-20'><span className='font-bold text-4xl'>DASHBOARD</span></section>;
-    }
+const formSchema = z.object({
+	email: z.email("Email inválido"),
+	password: z.string().min(8, "Contraseña mínima de 8 caracteres."),
+})
 
-1️⃣7️⃣ routes/login/route.tsx
+export function LoginForm({
+  const [loading, setLoading] = useState(false)
+  const form = useForm({
+		defaultValues: {},
+		validators: {onSubmit: formSchema,},
+		onSubmit: async ({ value }) => {
+       await authClient.signIn.email()
+    },
+	})
 
-    import { createFileRoute } from "@tanstack/react-router";
-    import { LoginForm } from "@/components/login-form";
-  
-    export const Route = createFileRoute("/login")({
-      component: RouteComponent,
-    });
-  
-    function RouteComponent() {
+  const signIn = async () => {
+    await authClient.signIn.social()
+  }
+
+  return (
+      <form
+						id="login-form"
+						onSubmit={e => {
+							e.preventDefault()
+							form.handleSubmit()
+						}}
+					>
+          ...
+          </form>
+  )
+
+1️⃣.1️⃣7️⃣ register.tsx
+
+1️⃣.1️⃣8️⃣ Header.tsx
+    export default async function Header() {
+      const [theme, setTheme] = useState<"light" | "dark">("light")
+      const { session } = useLoaderData({ from: "__root__" })
+
+      const toggleTheme = () => {}
+
       return (
-        <section className="w-screen sm:pt-10 2xl:pt-30 flex flex-col justify-center items-center">
-          <LoginForm />
-        </section>
-      );
-    }
-
-1️⃣8️⃣ routes/register/route.tsx
-
-    import { createFileRoute } from "@tanstack/react-router"
-    import { RegisterForm } from "@/components/register-form"
-  
-    export const Route = createFileRoute("/register")({
-      component: RouteComponent,
-    })
-  
-    function RouteComponent() {
-      return (
-        <section className="w-screen sm:pt-10 2xl:pt-30 flex flex-col justify-center items-center">
-          <RegisterForm />
-        </section>
+        { session ? () : () }
       )
     }
 
-1️⃣9️⃣ components/login-form.tsx
 
-    import { useForm } from "@tanstack/react-form"
-    import { toast } from "sonner"
-    import * as z from "zod"
-    import { Button } from "@/components/ui/button"
-    import {
-      Card,
-      CardContent,
-      CardDescription,
-      CardHeader,
-      CardTitle,
-    } from "@/components/ui/card"
-    import {
-      Field,
-      FieldDescription,
-      FieldError,
-      FieldGroup,
-      FieldLabel,
-      FieldSeparator,
-    } from "@/components/ui/field"
-    import { Input } from "@/components/ui/input"
-    import { cn } from "@/lib/utils"
-    import { authClient } from "lib/auth/auth-client"
-    import { Link } from "@tanstack/react-router"
-  
-    const formSchema = z.object({
-      email: z.email("Email inválido"),
-      password: z.string().min(8, "Contraseña mínima de 8 caracteres."),
-    })
-  
-    export function LoginForm({
-      className,
-      ...props
-    }: React.ComponentProps<"div">) {
-      const form = useForm({
-        defaultValues: {
-          email: "",
-          password: "",
-        },
-        validators: {
-          onSubmit: formSchema,
-        },
-        onSubmit: async ({ value }) => {
-          await authClient.signIn.email(
-            {
-              email: value.email,
-              password: value.password,
-              callbackURL: "/dashboard",
+TANSTACK QUERY
+----------------------
+2️⃣.0️⃣ instalacion
+
+    pnpm dlx @tanstack/react-query@latest
+
+2️⃣.1️⃣ queries/query-client.ts
+    let browserQueryClient: QueryClient | undefined
+
+    export function getQueryClient() {
+      // En el server: SIEMPRE un cliente nuevo
+      if (typeof window === "undefined") {
+        return new QueryClient({
+          defaultOptions: {
+            queries: {
+              staleTime: 1000 * 30, // 30s (ajustable)
+              retry: false,
             },
-            {
-              onSuccess: () => {
-                toast.success("Login exitoso")
-              },
-              onError: ctx => {
-                toast.error(ctx.error.message)
-              },
-            }
-          )
+          },
+        })
+      }
+
+      // En el browser: reutilizamos el mismo
+      if (!browserQueryClient) {
+        browserQueryClient = new QueryClient({
+          defaultOptions: {
+            queries: {
+              staleTime: 1000 * 30,
+              retry: false,
+            },
+          },
+        })
+      }
+
+      return browserQueryClient
+    }
+
+2️⃣.2️⃣ router.tsx
+    export const getRouter = () => {
+      const router = createRouter({
+        routeTree,
+        context: {
+          queryClient,
+          session: null,
+        },
+        defaultPendingMs: 0,
+        defaultPreload: "intent",
+        defaultPreloadStaleTime: 0,
+        scrollRestoration: true,
+      })
+
+      return router
+    }
+
+2️⃣.3️⃣ __root.tsx
+
+    function RootDocument({ children }: { children: React.ReactNode }) {
+      const queryClient = getQueryClient()
+
+      return (
+        
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+      )
+    }
+
+2️⃣.4️⃣ queries/items/items-query.ts
+    export const itemsQueryOptions = queryOptions({
+      queryKey: ["items"],
+      queryFn: () => getItemsServer(),
+      refetchInterval: 60 * 1000, // refrescar cada 60 segundos
+    })
+
+    export const itemQueryOptions = (itemId: string) => {
+      const queryClient = useQueryClient()
+      return queryOptions({
+        queryKey: ["item", itemId],
+
+        queryFn: () => getItemByIdServer({ data: { itemId } }), // BACKUP
+
+        initialData: () => {
+          const items = queryClient.getQueryData<ItemWithCategoryType[]>(["items"])
+          return items?.find(item => item.id === itemId)
         },
       })
-  
-      const signIn = async () => {
-      return await authClient.signIn.social({
-        provider: "google",
-      callbackURL: "/dashboard",
-      });
-    };
-  
-      return (
-        <div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Bienvenido de nuevo</CardTitle>
-              <CardDescription>Ingresa con una cuenta de Google</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                id="login-form"
-                onSubmit={e => {
-                  e.preventDefault()
-                  form.handleSubmit()
-                }}
-              >
-                <FieldGroup>
-                  <Field>
-                    <Button variant="outline" type="button" onClick={signIn}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <title>Google</title>
-                        <path
-                          d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Google
-                    </Button>
-                  </Field>
-                  <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                    O continua con
-                  </FieldSeparator>
-  
-                  <form.Field
-                    name="email"
-                    children={field => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
-                            placeholder="m@example.com"
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      )
-                    }}
-                  />
-  
-                  <form.Field
-                    name="password"
-                    children={field => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
-                            placeholder="********"
-                            type="password"
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      )
-                    }}
-                  />
-  
-                  <Field>
-                    <Button type="submit">Ingresar</Button>
-                    <FieldDescription className="text-center">
-                      No tiene cuenta ? <Link to="/register">Registrate</Link>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )
     }
 
-2️⃣0️⃣ components/register-form.tsx
-
-    import { useForm } from "@tanstack/react-form"
-    import { toast } from "sonner"
-    import * as z from "zod"
-    import { Button } from "@/components/ui/button"
-    import {
-      Card,
-      CardContent,
-      CardDescription,
-      CardHeader,
-      CardTitle,
-    } from "@/components/ui/card"
-    import {
-      Field,
-      FieldDescription,
-      FieldError,
-      FieldGroup,
-      FieldLabel,
-      FieldSeparator,
-    } from "@/components/ui/field"
-    import { Input } from "@/components/ui/input"
-    import { cn } from "@/lib/utils"
-    import { authClient } from "lib/auth/auth-client"
-    import { Link } from "@tanstack/react-router"
-  
-    const formSchema = z.object({
-      nombre: z.string().min(3, "Nombre mínimo de 3 caracteres."),
-      email: z.email("Email inválido"),
-      password: z.string().min(8, "Contraseña mínima de 8 caracteres."),
-    })
-  
-    export function RegisterForm({
-      className,
-      ...props
-    }: React.ComponentProps<"div">) {
-      const form = useForm({
-        defaultValues: {
-          nombre: "",
-          email: "",
-          password: "",
-        },
-        validators: {
-          onSubmit: formSchema,
-        },
-        onSubmit: async ({ value }) => {
-          await authClient.signUp.email(
-            {
-              email: value.email,
-              password: value.password,
-              name: value.nombre,
-              callbackURL: "/dashboard",
-            },
-            {
-              onSuccess: () => {
-                toast.success("Registro exitoso")
-              },
-              onError: ctx => {
-                toast.error(ctx.error.message)
-              },
-            }
-          )
-        },
-      })
-  
-      return (
-        <div className={cn("min-w-1/4 flex flex-col gap-6", className)} {...props}>
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Bienvenido a la app</CardTitle>
-              <CardDescription>Ingresa con una cuenta de Google</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                id="register-form"
-                onSubmit={e => {
-                  e.preventDefault()
-                  form.handleSubmit()
-                }}
-              >
-                <FieldGroup>
-                  <Field>
-                    <Button variant="outline" type="button">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <title>Google</title>
-                        <path
-                          d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Google
-                    </Button>
-                  </Field>
-                  <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                    O continua con
-                  </FieldSeparator>
-  
-                  <form.Field
-                    name="nombre"
-                    children={field => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
-                            placeholder="ruben blada"
-                            autoComplete="off"
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      )
-                    }}
-                  />
-  
-                  <form.Field
-                    name="email"
-                    children={field => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
-                            placeholder="m@example.com"
-                            autoComplete="off"
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      )
-                    }}
-                  />
-  
-                  <form.Field
-                    name="password"
-                    children={field => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
-                            placeholder="********"
-                            autoComplete="off"
-                            type="password"
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      )
-                    }}
-                  />
-  
-                  <Field>
-                    <Button type="submit">Registrar</Button>
-                    <FieldDescription className="text-center">
-                      Ya tienes cuenta ? <Link to="/login">Ingresar</Link>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )
-    }
-
-2️⃣1️⃣ components/header.tsx
-
-    import { authClient } from "lib/auth/auth-client";
-    import { Button } from "./ui/button";
-    import { useNavigate } from "@tanstack/react-router";
-  
-    export default function Header() {
-  
-      const {data: session} = authClient.useSession();
-      const navigate = useNavigate();
-  
-      const logout = async () => {
-        await authClient.signOut({
-          fetchOptions: {
-            onSuccess: () => {
-              // Redirect to home page after successful logout
-              navigate({ to: '/login' });
-            }
-          }
-        });
-      };
-  
-      return (
-        <header className="p-4 px-20 bg-gray-800 text-white shadow-lg">
-          <nav className="flex items-center justify-between">
-            <span>Logo</span>
-              {
-                session 
-                ? (
-                <div className="flex items-center gap-4">
-                  <span>Bienvenido {session.user.name}</span> 
-                  <Button onClick={logout}>Log Out</Button>
-                </div>
-                )
-                : <span>Not logged in</span>
-              }
-          </nav>
-        </header>
-      )
-    }
-
-2️⃣2️⃣ configurar el 
-  
-    GOOGLE_CLIENT_ID 
-    GOOGLE_CLIENT_SECRET
-  
-dentro de https://console.cloud.google.com/apis/dashboard?project=ts-better-auth-neon
-
-viendo el video https://www.youtube.com/watch?v=xqd51D3O53k&list=LL&index=8
-minuto 35
-
-
-
+idem para categories    
