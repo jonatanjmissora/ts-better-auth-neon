@@ -47,3 +47,5 @@ FALTA
 ✔ hace un errorComponent para el root, con su correspondiente mensaje de error
 
 ver si es mejor el middleware o el protectedRoute
+
+hace un flick cuando creo item o categoria, cuando navego entre rutas. what ????
