@@ -1,5 +1,5 @@
 import { authClient } from "lib/auth/auth-client"
-import { Link, useLoaderData, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { Moon, Sun } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -11,10 +11,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Route } from "@/routes/__root"
 
-export default async function Header() {
+export default function Header() {
 	const [theme, setTheme] = useState<"light" | "dark">("light")
-	const { session } = useLoaderData({ from: "__root__" })
+	const { session } = Route.useLoaderData()
 
 	const toggleTheme = () => {
 		if (typeof window !== "undefined") {
